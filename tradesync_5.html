@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TradeSync — Africa & Caribbean UK Trade Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#1c2333;
+  --border:#2a3441;--gold:#e8a838;--green:#3dd68c;
+  --blue:#58a6ff;--purple:#bc8cff;--red:#f85149;
+  --text:#e6edf3;--text2:#8b949e;--text3:#484f58;
+  --shadow:0 8px 32px rgba(0,0,0,0.4);
+  --radius:12px;
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;}
+a{color:var(--blue);text-decoration:none;}
+
+/* LAYOUT */
+.app{display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:220px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;}
+.main{flex:1;overflow-y:auto;padding:24px;}
+
+/* SIDEBAR */
+.logo-wrap{padding:20px 16px 12px;border-bottom:1px solid var(--border);}
+.logo-wrap h1{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;letter-spacing:-0.5px;}
+.logo-wrap h1 span{color:var(--gold);}
+.logo-sub{font-size:0.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+.nav-section{padding:10px 16px 4px;font-size:0.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;width:100%;background:transparent;border:none;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;text-align:left;transition:.15s;border-radius:6px;margin:1px 0;}
+.nav-item:hover{background:var(--bg3);color:var(--text);}
+.nav-item.active{background:rgba(232,168,56,0.12);color:var(--gold);}
+.nav-item i{width:14px;text-align:center;font-size:0.8rem;}
+.nav-buyer{background:linear-gradient(135deg,rgba(61,214,140,0.1),rgba(61,214,140,0.03));color:var(--green)!important;border:1px solid rgba(61,214,140,0.2);margin:4px 8px!important;border-radius:8px!important;padding:9px 12px!important;}
+.nav-buyer:hover{background:rgba(61,214,140,0.15)!important;}
+.nav-buyer.active{background:rgba(61,214,140,0.18)!important;border-color:var(--green)!important;}
+.sidebar-footer{margin-top:auto;padding:12px 16px;border-top:1px solid var(--border);}
+.sidebar-footer p{font-size:0.65rem;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.tags{display:flex;gap:4px;flex-wrap:wrap;}
+.tag{padding:4px 9px;background:rgba(88,166,255,0.15);border:1px solid rgba(88,166,255,0.35);border-radius:12px;font-size:0.72rem;color:#a0c8ff;cursor:pointer;transition:.15s;font-weight:500;}
+.tag:hover{background:rgba(88,166,255,0.28);border-color:var(--blue);color:#fff;}
+.tag.active{background:rgba(232,168,56,0.18);border-color:var(--gold);color:var(--gold);}
+
+/* TOP BAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.breadcrumb{font-size:0.78rem;color:var(--text3);}
+.breadcrumb span{color:var(--text);}
+.topbar-search{position:relative;}
+.topbar-search input{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:7px 12px 7px 32px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.82rem;width:220px;outline:none;transition:.15s;}
+.topbar-search input:focus{border-color:var(--gold);width:260px;}
+.topbar-search i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:0.78rem;pointer-events:none;}
+.search-results-drop{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--bg3);border:1px solid var(--border);border-radius:10px;z-index:300;display:none;box-shadow:var(--shadow);max-height:280px;overflow-y:auto;}
+.search-result-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;font-size:0.82rem;}
+.search-result-item:last-child{border-bottom:none;}
+.search-result-item:hover{background:var(--bg2);}
+.search-result-cat{font-size:0.7rem;color:var(--text3);margin-left:auto;}
+
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:0;}
+.card-title{font-family:'Syne',sans-serif;font-size:0.88rem;font-weight:700;margin-bottom:14px;color:var(--text);}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.gap-16{display:flex;flex-direction:column;gap:16px;}
+
+/* SECTION HEADER */
+.section-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;gap:16px;}
+.section-title{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;}
+.section-subtitle{font-size:0.8rem;color:var(--text2);margin-top:3px;}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:12px;font-size:0.7rem;font-weight:600;}
+.badge-green{background:rgba(61,214,140,0.12);color:var(--green);border:1px solid rgba(61,214,140,0.2);}
+.badge-gold{background:rgba(232,168,56,0.12);color:var(--gold);border:1px solid rgba(232,168,56,0.2);}
+.badge-blue{background:rgba(88,166,255,0.12);color:var(--blue);border:1px solid rgba(88,166,255,0.2);}
+.badge-purple{background:rgba(188,140,255,0.12);color:var(--purple);border:1px solid rgba(188,140,255,0.2);}
+.badge-red{background:rgba(248,81,73,0.12);color:var(--red);border:1px solid rgba(248,81,73,0.2);}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:500;transition:.15s;}
+.btn-primary{background:var(--gold);color:#0d1117;}
+.btn-primary:hover{background:#f0b840;}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text2);}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+.btn-green{background:rgba(61,214,140,0.12);border:1px solid rgba(61,214,140,0.25);color:var(--green);}
+.btn-green:hover{background:rgba(61,214,140,0.2);}
+
+/* STAT CARDS */
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;}
+.stat-label{font-size:0.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.stat-value{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:700;}
+.stat-sub{font-size:0.72rem;color:var(--text2);margin-top:4px;}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;padding:10px 12px;font-size:0.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);font-weight:500;}
+td{padding:10px 12px;border-bottom:1px solid rgba(42,52,65,0.5);font-size:0.82rem;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,0.02);}
+
+/* ALERT */
+.alert{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:10px;font-size:0.82rem;line-height:1.5;margin-bottom:16px;}
+.alert-gold{background:rgba(232,168,56,0.08);border:1px solid rgba(232,168,56,0.2);color:var(--text2);}
+.alert-gold i{color:var(--gold);flex-shrink:0;margin-top:2px;}
+
+/* PRODUCE CARDS */
+.produce-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.produce-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:.15s;}
+.produce-card:hover{border-color:rgba(232,168,56,0.3);}
+.produce-card-header{background:var(--bg3);padding:14px 16px;display:flex;justify-content:space-between;align-items:flex-start;}
+.produce-name{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;}
+.produce-origin{font-size:0.72rem;color:var(--text3);margin-top:2px;}
+.produce-card-body{padding:14px 16px;}
+.produce-detail{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px solid rgba(42,52,65,0.4);font-size:0.8rem;}
+.produce-detail:last-of-type{border-bottom:none;}
+.produce-detail-label{color:var(--text2);}
+.produce-detail-value{font-weight:500;text-align:right;}
+
+/* NICHE CARDS */
+.niche-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;}
+.niche-title{font-family:'Syne',sans-serif;font-size:0.88rem;font-weight:700;margin-bottom:6px;}
+.niche-opportunity{font-size:0.78rem;color:var(--text2);line-height:1.5;margin-bottom:10px;}
+
+/* MATCH CARDS */
+.match-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;gap:14px;align-items:flex-start;}
+.match-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.match-content{flex:1;}
+.match-title{font-weight:600;font-size:0.88rem;margin-bottom:4px;}
+.match-desc{font-size:0.78rem;color:var(--text2);line-height:1.5;margin-bottom:8px;}
+.match-footer{display:flex;justify-content:space-between;align-items:center;}
+
+/* ROUTE CARDS */
+.route-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;}
+.route-path{font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.route-arrow{color:var(--gold);}
+
+/* CALCULATOR */
+.calc-section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;}
+.calc-section-title{font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;margin-bottom:12px;color:var(--gold);}
+.form-group{margin-bottom:10px;}
+.form-group label{display:block;font-size:0.75rem;color:var(--text2);margin-bottom:5px;}
+.form-group input,.form-group select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.83rem;outline:none;transition:.15s;}
+.form-group input:focus,.form-group select:focus{border-color:var(--gold);}
+.form-group select option{background:var(--bg3);}
+.calc-result{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:18px;}
+.calc-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(42,52,65,0.4);font-size:0.82rem;}
+.calc-row:last-child{border-bottom:none;}
+.calc-row .label{color:var(--text2);}
+.calc-total{background:rgba(232,168,56,0.08);border:1px solid rgba(232,168,56,0.2);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;margin-top:10px;font-weight:700;font-family:'Syne',sans-serif;}
+.calc-highlight{background:rgba(61,214,140,0.08);border:1px solid rgba(61,214,140,0.2);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;margin-top:6px;font-weight:600;}
+
+/* REGS */
+.reg-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:12px;}
+.reg-title{font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.reg-item{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid rgba(42,52,65,0.4);font-size:0.8rem;}
+.reg-item:last-child{border-bottom:none;}
+.reg-key{color:var(--text2);min-width:130px;flex-shrink:0;}
+.reg-val{color:var(--text);line-height:1.5;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;display:none;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;}
+.modal-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:16px;}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--bg3);border:1px solid var(--green);border-radius:10px;padding:12px 16px;font-size:0.82rem;z-index:600;display:none;align-items:center;gap:8px;color:var(--green);}
+.toast.show{display:flex;}
+
+/* EMPTY */
+.empty{text-align:center;padding:40px;color:var(--text3);}
+.empty i{font-size:2rem;margin-bottom:12px;display:block;}
+.empty p{font-size:0.85rem;}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap;}
+.filter-bar input,.filter-bar select{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.83rem;outline:none;transition:.15s;}
+.filter-bar input{flex:1;min-width:180px;}
+.filter-bar input:focus,.filter-bar select:focus{border-color:var(--gold);}
+.filter-bar select option{background:var(--bg3);}
+.filter-search{position:relative;}
+.filter-search i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:0.78rem;pointer-events:none;}
+.filter-search input{padding-left:30px!important;}
+.filter-count{font-size:0.75rem;color:var(--text3);margin-left:auto;}
+
+/* AUTOCOMPLETE */
+.autocomplete-wrap{position:relative;}
+.autocomplete-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg3);border:1px solid var(--gold);border-radius:8px;z-index:200;max-height:220px;overflow-y:auto;display:none;box-shadow:var(--shadow);}
+.autocomplete-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);font-size:0.82rem;display:flex;justify-content:space-between;align-items:center;}
+.autocomplete-item:last-child{border-bottom:none;}
+.autocomplete-item:hover{background:var(--bg2);}
+
+/* BUYER HUB */
+.buyer-hero{background:linear-gradient(135deg,rgba(61,214,140,0.08),rgba(61,214,140,0.02));border:1px solid rgba(61,214,140,0.2);border-radius:var(--radius);padding:28px 32px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;}
+.buyer-hero-text h2{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:6px;}
+.buyer-hero-text p{font-size:0.83rem;color:var(--text2);max-width:500px;line-height:1.6;}
+.buyer-hero-stats{display:flex;gap:24px;}
+.buyer-hero-stat .val{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:700;color:var(--green);text-align:center;}
+.buyer-hero-stat .lbl{font-size:0.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;text-align:center;}
+.spotlight-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.spotlight-tab{padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:0.83rem;cursor:pointer;transition:.15s;}
+.spotlight-tab:hover{border-color:var(--gold);color:var(--gold);}
+.spotlight-tab.active{background:rgba(61,214,140,0.1);border-color:var(--green);color:var(--green);}
+.spotlight-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.demand-signal{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg3);border-radius:8px;margin-bottom:8px;}
+.demand-signal:last-child{margin-bottom:0;}
+.demand-signal-icon{font-size:1.1rem;}
+.demand-signal-label{font-size:0.83rem;font-weight:600;margin-bottom:1px;}
+.demand-signal-val{font-size:0.75rem;color:var(--text2);}
+.demand-signal-badge{margin-left:auto;font-size:0.75rem;font-weight:600;}
+.competitor-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.8rem;}
+.competitor-row:last-child{border-bottom:none;}
+.competitor-product{font-size:0.72rem;color:var(--text3);margin-top:1px;}
+.competitor-price{color:var(--gold);font-weight:600;}
+.compliance-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(42,52,65,0.5);font-size:0.8rem;}
+.compliance-item:last-child{border-bottom:none;}
+.compliance-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;flex-shrink:0;margin-top:1px;}
+.ci-pass{background:rgba(61,214,140,0.15);color:var(--green);}
+.ci-warn{background:rgba(232,168,56,0.15);color:var(--gold);}
+.ci-info{background:rgba(88,166,255,0.15);color:var(--blue);}
+.supplier-mini{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:0.82rem;}
+.supplier-mini:last-child{border-bottom:none;}
+.supplier-mini-name{font-weight:600;}
+.supplier-mini-detail{font-size:0.72rem;color:var(--text2);margin-top:2px;}
+.faq-item{padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.faq-item:last-child{border-bottom:none;}
+.faq-q{font-size:0.83rem;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.faq-a{font-size:0.78rem;color:var(--text2);line-height:1.6;margin-top:8px;display:none;}
+.faq-item.open .faq-a{display:block;}
+.faq-chevron{transition:.2s;color:var(--text3);flex-shrink:0;}
+.faq-item.open .faq-chevron{transform:rotate(180deg);}
+.cta-box{background:linear-gradient(135deg,rgba(232,168,56,0.1),rgba(232,168,56,0.03));border:1px solid rgba(232,168,56,0.25);border-radius:var(--radius);padding:22px;text-align:center;}
+.cta-box h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:6px;}
+.cta-box p{font-size:0.78rem;color:var(--text2);margin-bottom:14px;}
+
+@media(max-width:900px){
+  .spotlight-grid{grid-template-columns:1fr;}
+  .grid-2{grid-template-columns:1fr;}
+}
+
+/* REGION MODAL */
+.region-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:600;display:none;align-items:flex-end;justify-content:center;}
+.region-modal-overlay.open{display:flex;}
+.region-modal{background:var(--bg2);border:1px solid var(--border);border-top:2px solid var(--gold);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:820px;max-height:82vh;overflow-y:auto;padding:28px 28px 32px;}
+.region-modal-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;}
+.region-modal-title{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;}
+.region-modal-sub{font-size:0.8rem;color:var(--text2);margin-top:3px;}
+.region-close{background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--text2);padding:6px 12px;cursor:pointer;font-size:0.8rem;font-family:'DM Sans',sans-serif;}
+.region-close:hover{border-color:var(--gold);color:var(--gold);}
+.region-stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.region-stat{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.region-stat .rv{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:3px;}
+.region-stat .rl{font-size:0.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;}
+.region-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.region-product-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;font-size:0.78rem;margin:3px;cursor:pointer;transition:.15s;}
+.region-product-pill:hover{border-color:var(--gold);color:var(--gold);}
+.region-country{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:0.82rem;}
+.region-country:last-child{border-bottom:none;}
+.region-country-flag{font-size:1.2rem;}
+.region-country-name{font-weight:600;min-width:130px;}
+.region-country-detail{color:var(--text2);font-size:0.75rem;}
+
+/* GI BADGE */
+.gi-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;font-size:0.68rem;font-weight:700;}
+.gi-low{background:rgba(61,214,140,0.15);color:var(--green);border:1px solid rgba(61,214,140,0.25);}
+.gi-medium{background:rgba(232,168,56,0.15);color:var(--gold);border:1px solid rgba(232,168,56,0.25);}
+.gi-high{background:rgba(248,81,73,0.15);color:var(--red);border:1px solid rgba(248,81,73,0.25);}
+</style>
+</head>
+<body>
+
+<div class="app">
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo-wrap">
+    <h1>Trade<span>Sync</span></h1>
+    <div class="logo-sub">Intelligence Platform</div>
+  </div>
+  <div style="padding:8px 0 4px;">
+    <div class="nav-section">Navigation</div>
+    <button class="nav-item active" data-view="dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</button>
+    <button class="nav-item nav-buyer" data-view="buyerhub"><i class="fa-solid fa-store"></i> Buyer Hub ✦</button>
+    <button class="nav-item" data-view="regulations"><i class="fa-solid fa-scale-balanced"></i> UK Regulations</button>
+    <button class="nav-item" data-view="directory"><i class="fa-solid fa-building"></i> Directory</button>
+    <button class="nav-item" data-view="matchmaking"><i class="fa-solid fa-handshake-angle"></i> Matchmaking</button>
+    <button class="nav-item" data-view="produce"><i class="fa-solid fa-seedling"></i> Local Produce</button>
+    <button class="nav-item" data-view="logistics"><i class="fa-solid fa-ship"></i> Logistics & Hubs</button>
+    <button class="nav-item" data-view="niche"><i class="fa-solid fa-lightbulb"></i> Niche Markets</button>
+    <button class="nav-item" data-view="calculator"><i class="fa-solid fa-calculator"></i> Margin Calculator</button>
+    <button class="nav-item" data-view="myproducers"><i class="fa-solid fa-list-check"></i> My Producer Leads</button>
+  </div>
+  <div class="sidebar-footer">
+    <p>Focus Regions</p>
+    <div class="tags">
+      <span class="tag" onclick="openRegion('west-africa')">W. Africa</span>
+      <span class="tag" onclick="openRegion('east-africa')">E. Africa</span>
+      <span class="tag" onclick="openRegion('caribbean')">Caribbean</span>
+      <span class="tag" onclick="openRegion('eu')">EU</span>
+      <span class="tag" onclick="openRegion('uk')">UK Market</span>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="breadcrumb">TradeSync / <span id="breadcrumb-current">Dashboard</span></div>
+    <div class="topbar-search">
+      <i class="fa-solid fa-search"></i>
+      <input id="global-search" placeholder="Search produce, companies..." oninput="globalSearch()" onkeydown="if(event.key==='Escape')closeGlobalSearch()">
+      <div class="search-results-drop" id="search-drop"></div>
+    </div>
+  </div>
+  <div id="view-container"></div>
+</main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-title"><i class="fa-solid fa-plus" style="color:var(--gold);margin-right:8px;"></i>Add Producer Lead</div>
+    <div class="grid-2">
+      <div class="form-group"><label>Producer Name *</label><input id="m-name" placeholder="e.g. Sahel Grain Co."></div>
+      <div class="form-group"><label>Country</label><input id="m-country" placeholder="e.g. Senegal"></div>
+      <div class="form-group"><label>Region / Location</label><input id="m-location" placeholder="e.g. Dakar"></div>
+      <div class="form-group"><label>Product</label><input id="m-product" placeholder="e.g. Fonio Grain"></div>
+      <div class="form-group"><label>Volume Available</label><input id="m-volume" placeholder="e.g. 2–5 tonnes/month"></div>
+      <div class="form-group"><label>Margin Category</label>
+        <select id="m-margin"><option>High</option><option>Medium</option><option>Low</option></select>
+      </div>
+    </div>
+    <div class="form-group"><label>Target UK Buyer</label><input id="m-buyer" placeholder="e.g. Health food retailers, D2C"></div>
+    <div class="form-group"><label>Notes</label><input id="m-notes" placeholder="Certifications, contact details, status..."></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProducer()"><i class="fa-solid fa-save"></i> Save Lead</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fa-solid fa-circle-check"></i><span id="toast-msg">Saved!</span></div>
+
+<!-- REGION MODAL -->
+<div class="region-modal-overlay" id="region-overlay" onclick="if(event.target===this)closeRegion()">
+  <div class="region-modal" id="region-content"></div>
+</div>
+
+<script>
+// ===================== DATA =====================
+const PRODUCE_DATA = [
+  {name:'Fonio',gi:58,giLabel:'Low-Medium',origin:'Guinea, Senegal, Mali',category:'Ancient Grains',hsCodes:['1008.90 (raw grain)','1102.90 (flour)','1904.90 (prepared)'],ukDuty:'0% (DCTS)',avgFOB:'£1.20–£1.80/kg raw, £2.50–£4.00/kg retail-ready',ukRetailPrice:'£3.50–£9.00/kg',phyto:'Phytosanitary certificate required — APHA/IPAFFS pre-notification',certifications:'Organic (Soil Assoc), Fairtrade, Gluten-Free lab',seasons:'Year-round (harvest Oct–Jan)',margin:'High',trend:'up',notes:'Fastest-growing African grain in UK health market. Gluten-free, cooks in 5 min. Position vs quinoa. Most current stock labelled for EU/French market — UK relabelling needed.'},
+  {name:'Moringa',gi:null,giLabel:'N/A (powder)',origin:'Ghana, Senegal, Nigeria',category:'Superfoods',hsCodes:['0712.90 (dried veg/leaf)'],ukDuty:'0% (UKGT)',avgFOB:'£3.00–£6.00/kg',ukRetailPrice:'£40–£80/kg (pack equiv)',phyto:'Phytosanitary certificate required',certifications:'Organic (Soil Assoc), Fairtrade',seasons:'Year-round',margin:'High',trend:'up',notes:'Established UK wellness market. Holland & Barrett, Planet Organic stock it. High protein, iron. Powder and capsule formats both viable. No Novel Food issues.'},
+  {name:'Ackee',gi:45,giLabel:'Low',origin:'Jamaica',category:'Caribbean Produce',hsCodes:['2008.99 (canned/prepared)','0810.90 (fresh)'],ukDuty:'6.4% canned, 0% fresh',avgFOB:'£4.00–£7.00/kg (canned)',ukRetailPrice:'£6.00–£12.00/kg',phyto:'Strict health certificate required — unripe ackee contains hypoglycin A',certifications:'FDA-equivalent approval needed; HACCP essential',seasons:'Seasonal fresh; canned year-round',margin:'Medium-High',trend:'stable',notes:"Jamaica's national fruit. Almost exclusively sold canned in UK. Fresh ackee import has significant health compliance requirements. Dominant in Afro-Caribbean grocery channel."},
+  {name:'Scotch Bonnet',gi:15,giLabel:'Low',origin:'Jamaica, Trinidad, Ghana',category:'Caribbean Produce',hsCodes:['0709.60 (fresh peppers)'],ukDuty:'0% (fresh veg)',avgFOB:'£2.50–£4.50/kg',ukRetailPrice:'£8.00–£16.00/kg',phyto:'Phytosanitary certificate; GlobalGAP recommended',certifications:'GlobalGAP for major retailers; Organic available',seasons:'Year-round (Caribbean); Jul–Oct (West Africa)',margin:'Medium',trend:'stable',notes:'Diaspora staple with crossover into mainstream UK cooking. Fresh product requires cold chain. Supermarkets require GlobalGAP. Sauces and condiments offer higher margin.'},
+  {name:'Baobab Powder',gi:40,giLabel:'Low',origin:'Mali, Senegal, Burkina Faso',category:'Superfoods',hsCodes:['0813.40 (dried fruit)'],ukDuty:'0% (DCTS)',avgFOB:'£4.00–£8.00/kg',ukRetailPrice:'£75–£175/kg (pack equiv)',phyto:'Phytosanitary certificate required',certifications:'Organic, Wild-harvested, Fairtrade',seasons:'Year-round (dried)',margin:'High',trend:'stable',notes:"Novel Food authorised in UK — cleared for sale. One of the highest vitamin C concentrations of any food. Premium small-format positioning. Aduna is UK market leader. Wild-harvest story is powerful for branding."},
+  {name:'Shea Butter',gi:null,giLabel:'N/A (oil/fat)',origin:'Ghana, Nigeria, Burkina Faso',category:'Oils & Fats',hsCodes:['1515.90 (other vegetable fats)'],ukDuty:'0% (DCTS)',avgFOB:'£1.50–£3.00/kg raw, £4.00–£8.00/kg refined',ukRetailPrice:'£15–£40/kg (cosmetic)',phyto:'No phyto required for refined',certifications:'Organic (Soil Assoc), Fairtrade, RSPO',seasons:'Year-round',margin:'High',trend:'up',notes:'Dual market: food grade and cosmetics/beauty. Cosmetic grade commands premium. UK natural beauty market growing fast. Women cooperatives are key suppliers — powerful ethical sourcing story.'},
+  {name:'Plantain',gi:55,giLabel:'Low-Medium',origin:'Ghana, Nigeria, Jamaica, Trinidad',category:'Caribbean Produce',hsCodes:['0803.90 (plantains)'],ukDuty:'0% (fresh)',avgFOB:'£0.80–£1.50/kg',ukRetailPrice:'£2.00–£4.00/kg',phyto:'Phytosanitary certificate required',certifications:'GlobalGAP for supermarkets',seasons:'Year-round',margin:'Medium',trend:'stable',notes:'High volume Afro-Caribbean staple. Competitive market. Green and ripe plantain both sold. Flour and chips formats offer better margin. Major supermarkets now stocking.'},
+  {name:'Hibiscus (Dried)',gi:null,giLabel:'N/A (tea)',origin:'Ghana, Senegal, Nigeria',category:'Herbs & Botanicals',hsCodes:['0712.90 (dried flowers)'],ukDuty:'0% (UKGT)',avgFOB:'£2.00–£5.00/kg',ukRetailPrice:'£30–£80/kg (tea format)',phyto:'Phytosanitary certificate required',certifications:'Organic, Fairtrade available',seasons:'Year-round (dried)',margin:'High',trend:'up',notes:'Crossing from diaspora staple (bissap/sorrel) to UK premium tea market. Pukka, Clipper already stocking. High vitamin C. Loose-leaf premium positioning best entry point for new importers.'},
+  {name:'Cassava Flour',gi:46,giLabel:'Low',origin:'Ghana, Nigeria, Jamaica',category:'Ancient Grains',hsCodes:['1106.20 (cassava flour)'],ukDuty:'0% (DCTS)',avgFOB:'£0.80–£1.40/kg',ukRetailPrice:'£4.00–£8.00/kg',phyto:'Phytosanitary certificate required for raw; processed usually exempt',certifications:'Gluten-Free lab cert (key selling point), Organic available',seasons:'Year-round',margin:'High',trend:'up',notes:'Fastest growing gluten-free flour in UK. 100% grain-free, Paleo-friendly, nut-free. Outcompeting almond flour on price. Otto\'s Naturals is market leader — room for West African-origin brand. High demand from UK gluten-free bakers.'},
+  {name:'Tiger Nuts',gi:35,giLabel:'Low',origin:'Ghana, Nigeria',category:'Superfoods',hsCodes:['2008.99 (prepared/preserved)','1212.99 (fresh/dried)'],ukDuty:'0% (DCTS)',avgFOB:'£1.50–£2.50/kg',ukRetailPrice:'£8.00–£18.00/kg',phyto:'Phytosanitary certificate required',certifications:'Organic (Soil Assoc), Gluten-Free, Paleo-certified',seasons:'Year-round (dried)',margin:'High',trend:'up',notes:'West African origin, known as chufa in Spain (horchata). UK health market values prebiotic fibre content. Sold as snack, flour and tiger nut milk. Nut-free, making it ideal for school and nut-allergy market. Growing rapidly in UK natural food stores.'},
+  {name:'Egusi Seeds',gi:30,giLabel:'Low',origin:'Nigeria, Ghana, Sierra Leone',category:'Oils & Fats',hsCodes:['1207.99 (other oil seeds)'],ukDuty:'0% (DCTS)',avgFOB:'£1.80–£3.00/kg',ukRetailPrice:'£5.00–£10.00/kg',phyto:'Phytosanitary certificate required',certifications:'None typically required',seasons:'Oct–Feb (post-harvest)',margin:'Medium-High',trend:'stable',notes:'Staple of West African cooking, particularly Nigerian cuisine. Huge diaspora demand in UK. Sold as whole seeds or ground. Growing mainstream interest via Nigerian food media and restaurants. High protein and fat content — emerging interest from plant-based sector.'},
+  {name:'Soursop (Dried/Frozen)',gi:42,giLabel:'Low',origin:'Jamaica, Trinidad, Ghana',category:'Caribbean Produce',hsCodes:['0811.90 (frozen fruit)','0813.40 (dried fruit)'],ukDuty:'0% (UKGT)',avgFOB:'£3.00–£6.00/kg (frozen)',ukRetailPrice:'£12.00–£25.00/kg',phyto:'Health certificate required; strict cold chain for frozen',certifications:'Organic where available',seasons:'Year-round (frozen/dried)',margin:'High',trend:'up',notes:'Tropical fruit with deep Caribbean/West African roots and fast-growing UK wellness market. Anti-inflammatory positioning popular online. Sold as frozen pulp, dried leaf tea, and juice concentrate. Diaspora staple AND wellness crossover. Strong D2C opportunity.'},
+  {name:'Dried Mango (West African)',gi:55,giLabel:'Low-Medium',origin:'Mali, Burkina Faso, Senegal',category:'Dried Fruits',hsCodes:['0813.40 (dried fruit)'],ukDuty:'0% (DCTS)',avgFOB:'£2.00–£4.00/kg',ukRetailPrice:'£8.00–£16.00/kg',phyto:'Phytosanitary certificate required',certifications:'Organic available; Fairtrade',seasons:'Apr–Jul (harvest); year-round (dried)',margin:'High',trend:'stable',notes:'Sahel-region dried mango is naturally sweet with no added sugar, unlike South Asian competitors. Smaller format, more intense flavour. UK demand for natural snacks growing. Opportunity to position as premium no-sugar-added alternative to existing dried mango products.'},
+  {name:'Tamarind',gi:23,giLabel:'Low',origin:'Ghana, Nigeria, Jamaica',category:'Herbs & Botanicals',hsCodes:['0813.40 (dried fruit)','2001.90 (prepared)'],ukDuty:'0% (DCTS)',avgFOB:'£1.00–£2.50/kg',ukRetailPrice:'£4.00–£10.00/kg',phyto:'Phytosanitary certificate required',certifications:'Organic available',seasons:'Nov–Mar (harvest)',margin:'Medium-High',trend:'stable',notes:'Essential in West African and Caribbean cooking. Also used in Indian cuisine giving broad UK market. Sold as paste, block or concentrate. Large diaspora demand established. Opportunity in premium cooking sauces and condiments using tamarind as key ingredient.'},
+];
+
+const DIRECTORY_DATA = [
+  {name:'African Food Market Ltd',type:'Importer',location:'London, UK',products:'Fonio, Moringa, Baobab, Hibiscus',contact:'info@africanfoodmarket.co.uk',verified:true},
+  {name:'Caribbean Direct Imports',type:'Importer/Distributor',location:'Birmingham, UK',products:'Ackee, Scotch Bonnet, Plantain, Callaloo',contact:'trade@caribbeandir.co.uk',verified:true},
+  {name:'Sahel Grain Co.',type:'Exporter',location:'Bamako, Mali',products:'Fonio, Sorghum, Millet, Fonio Flour, Dried Mango',contact:'export@sahelgrain.ml',verified:true},
+  {name:'Ghana Premium Produce',type:'Exporter',location:'Accra, Ghana',products:'Moringa, Shea Butter, Hibiscus, Baobab, Tiger Nuts',contact:'ghpremium@gmail.com',verified:true},
+  {name:'Dakar Agri Exports',type:'Exporter',location:'Dakar, Senegal',products:'Fonio (raw & retail-ready), Moringa, Hibiscus, Tamarind',contact:'contact@dakaragri.sn',verified:true},
+  {name:'West African Foods Ltd',type:'Importer/Distributor',location:'Manchester, UK',products:'Dried hibiscus, Shea butter, Plantain flour, Egusi',contact:'waf@westafricanfoods.co.uk',verified:false},
+  {name:'Planet Organic',type:'Retailer/Distributor',location:'London, UK',products:'Moringa, Baobab, Fonio, Superfoods',contact:'buying@planetorganic.com',verified:true},
+  {name:'Kingston Produce Co.',type:'Exporter',location:'Kingston, Jamaica',products:'Scotch Bonnet, Ackee, Plantain, Soursop, Callaloo',contact:'exports@kingstonproduce.jm',verified:false},
+  {name:'NaturalAfrica UK Ltd',type:'Importer',location:'Bristol, UK',products:'Shea butter, Baobab powder, Tiger nuts, Moringa',contact:'hello@naturalafrica.co.uk',verified:true},
+  {name:'Afro-Caribbean Wholesale Ltd',type:'Importer/Distributor',location:'London, UK',products:'Full range — Ackee, Plantain, Scotch Bonnet, Egusi, Tamarind',contact:'wholesale@afrocaribbean.co.uk',verified:true},
+  {name:'Burkina Fresh Exports',type:'Exporter',location:'Ouagadougou, Burkina Faso',products:'Shea butter, Baobab, Dried mango, Moringa',contact:'bf.exports@orange.bf',verified:false},
+  {name:'Holland & Barrett',type:'Retailer/Distributor',location:'London, UK (National)',products:'Moringa, Baobab, Tiger nuts, Hibiscus, Superfoods',contact:'suppliers@hollandandbarrett.com',verified:true},
+  {name:'Biofresh Amsterdam',type:'EU Importer/Distributor',location:'Amsterdam, Netherlands',products:'Fonio, Moringa, Baobab, Tiger Nuts, Hibiscus',contact:'trade@biofresh.nl',verified:true},
+  {name:'Afrique Saveurs',type:'EU Importer/Distributor',location:'Paris, France',products:'Fonio, Cassava Flour, Egusi, Plantain, Tamarind',contact:'import@afriquesaveurs.fr',verified:true},
+  {name:'BioNaturales Ibérica',type:'EU Importer',location:'Barcelona, Spain',products:'Tiger Nuts (Chufa), Moringa, Baobab, Dried Mango',contact:'compras@bionaturales.es',verified:true},
+  {name:'AfroMarkt GmbH',type:'EU Importer/Distributor',location:'Hamburg, Germany',products:'Plantain, Egusi, Scotch Bonnet, Dried Fish, Cassava',contact:'einkauf@afromarkt.de',verified:false},
+  {name:'Tropical Foods Europe',type:'EU Wholesaler',location:'Rotterdam, Netherlands',products:'Full Caribbean range — Ackee, Soursop, Scotch Bonnet, Plantain',contact:'buyers@tropicalfoods.eu',verified:true},
+  {name:'Naturalia France',type:'EU Retailer',location:'Paris, France (National)',products:'Baobab, Moringa, Fonio, Hibiscus, Superfoods',contact:'achats@naturalia.fr',verified:true},
+  {name:'Alimentari Africani',type:'EU Importer',location:'Milan, Italy',products:'Moringa, Shea Butter, Hibiscus, Egusi, Tamarind',contact:'info@alimentariafricani.it',verified:false},
+  {name:'Zogo Foods',type:'UK Brand',location:'London, UK',products:'Fonio grain, Fonio flour, Fonio snack bars',contact:'info@zogofoods.com',verified:true},
+  {name:'Aduna',type:'UK Brand',location:'London, UK',products:'Baobab powder, Moringa, African superfood range',contact:'trade@aduna.com',verified:true},
+];
+
+const ROUTES = [
+  {from:'Dakar, Senegal',to:'Felixstowe, UK',mode:'Sea',transit:'18–22 days',cost:'£900–£1,400/20ft',notes:'Main West African grain route. Maersk and MSC operate regular services. Good for fonio, moringa, hibiscus.'},
+  {from:'Accra, Ghana',to:'Tilbury, UK',mode:'Sea',transit:'16–20 days',cost:'£850–£1,300/20ft',notes:'CMA CGM and Hapag-Lloyd services. Good for shea butter, moringa, plantain, tiger nuts. Reefer available for fresh produce.'},
+  {from:'Lagos, Nigeria',to:'Felixstowe, UK',mode:'Sea',transit:'14–18 days',cost:'£800–£1,200/20ft',notes:'High frequency sailings. Good for plantain, hibiscus, egusi, cassava flour. Allow extra customs clearance time — Nigerian documentation can be complex.'},
+  {from:'Conakry, Guinea',to:'Felixstowe, UK',mode:'Sea',transit:'20–25 days',cost:'£1,100–£1,600/20ft',notes:'Primary fonio origin port. Less frequent sailings — plan carefully. Often routes via Dakar hub. Key for fonio grain and flour.'},
+  {from:'Kingston, Jamaica',to:'Tilbury, UK',mode:'Sea',transit:'12–16 days',cost:'£1,200–£1,800/20ft',notes:'Caribbean route. Good for ackee (canned), scotch bonnet, plantain, soursop (frozen — reefer essential). CMA CGM dominant carrier.'},
+  {from:'Dakar, Senegal',to:'London Heathrow, UK',mode:'Air',transit:'1–2 days',cost:'£4–£8/kg',notes:'Air freight only viable for very high value goods or urgent sampling. Use for fonio flour samples, premium moringa, time-sensitive fresh produce.'},
+  {from:'Ouagadougou, Burkina Faso',to:'Felixstowe, UK',mode:'Sea',transit:'22–28 days',cost:'£1,200–£1,800/20ft',notes:'Landlocked — goods transit through Dakar (Senegal) or Abidjan (Côte d\'Ivoire) port. Plan extra lead time. Key source for shea butter, dried mango, baobab.'},
+  {from:'Bamako, Mali',to:'Felixstowe, UK',mode:'Sea',transit:'22–28 days',cost:'£1,100–£1,700/20ft',notes:'Landlocked — routed via Dakar. Key for fonio grain, sorghum, dried mango. Allow 4–6 weeks from order to UK arrival for planning.'},
+  {from:'Port of Spain, Trinidad',to:'Tilbury, UK',mode:'Sea',transit:'14–18 days',cost:'£1,300–£1,900/20ft',notes:'Good for scotch bonnet, soursop, fresh herbs, callaloo. Strong UK-CARIFORUM EPA trade preference. Hapag-Lloyd and CMA CGM serve this route.'},
+  {from:'Accra, Ghana',to:'Heathrow, UK',mode:'Air',transit:'1–2 days',cost:'£3.50–£7/kg',notes:'Good for perishable high-value goods — fresh scotch bonnet, tiger nut milk, premium moringa samples. British Airways and Ethiopian Airlines cargo.'},
+];
+
+const NICHE_DATA = [
+  {market:'Gluten-Free Grains (Mainstream)',opportunity:'Fonio, teff and sorghum positioned alongside quinoa in free-from aisles. Growing 12% YoY. Buyers actively seeking alternatives to quinoa monopoly.',products:['Fonio','Cassava Flour','Sorghum'],maturity:'Growing',margin:'High'},
+  {market:'Diaspora Grocery (Afro-Caribbean)',opportunity:'London, Birmingham, Manchester — large established communities with consistent purchasing. Less price sensitivity on authentic products. Egusi, tamarind, ackee all core staples.',products:['Ackee','Scotch Bonnet','Plantain','Hibiscus','Egusi','Tamarind'],maturity:'Established',margin:'Medium'},
+  {market:'UK Wellness & Superfood D2C',opportunity:'D2C subscription boxes and online health stores with high AOV. Moringa, baobab and hibiscus all fit. Instagram-friendly products with strong brand story potential.',products:['Moringa','Baobab','Hibiscus','Tiger Nuts','Soursop'],maturity:'Growing',margin:'High'},
+  {market:'Vegan & Plant-Based Protein',opportunity:'Fonio and moringa both viable protein sources for plant-based ranges. Vegan market £600M+ in UK. Retailers actively seeking new protein sources beyond soy and pea.',products:['Fonio','Moringa','Tiger Nuts','Egusi'],maturity:'Emerging',margin:'High'},
+  {market:'Caribbean Mainstream Supermarkets',opportunity:"Sainsbury's, Waitrose and Tesco all expanded Caribbean ranges post-2020. Opportunity for scotch bonnet sauces, plantain chips, ackee with proper certification.",products:['Scotch Bonnet','Plantain','Ackee','Soursop'],maturity:'Growing',margin:'Medium'},
+  {market:'Natural Beauty & Cosmetics',opportunity:'Shea butter is a UK natural beauty staple. Baobab oil and moringa oil also gaining traction. Higher margin than food grade. Cosmetic-grade certification required.',products:['Shea Butter','Baobab'],maturity:'Established',margin:'High'},
+  {market:'Paleo & Grain-Free Baking',opportunity:'Cassava flour and tiger nut flour are the fastest-growing Paleo alternatives to almond flour. Whole Foods, Planet Organic buyers actively seeking new suppliers. High price tolerance.',products:['Cassava Flour','Tiger Nuts'],maturity:'Growing',margin:'High'},
+  {market:'Premium Dried Snacks & Trail Mixes',opportunity:'UK snack market shifting to natural, no-added-sugar products. Dried mango, tiger nuts and hibiscus-seasoned snacks fit premium gifting and independent deli channels perfectly.',products:['Dried Mango','Tiger Nuts','Hibiscus'],maturity:'Emerging',margin:'High'},
+  {market:'UK Restaurant & Foodservice',opportunity:'West African cuisine is the fastest growing food culture in UK restaurants. Chefs sourcing fonio, egusi, tamarind and scotch bonnet direct. Higher MOQ but consistent repeat orders.',products:['Fonio','Egusi','Tamarind','Scotch Bonnet'],maturity:'Emerging',margin:'Medium'},
+  {market:'Health Tea & Botanical Drinks',opportunity:'UK herbal tea market £130M and growing. Hibiscus, baobab and soursop leaf all viable. Premium loose-leaf and RTD formats. Functional drinks angle — vitamin C, anti-inflammatory.',products:['Hibiscus','Soursop','Baobab'],maturity:'Growing',margin:'High'},
+];
+
+const BUYER_SPOTLIGHTS = {
+  Fonio:{
+    emoji:'🌾',
+    headline:'The next quinoa — and the UK market is just waking up',
+    summary:'Fonio is a West African ancient grain that is naturally gluten-free, cooks in 5 minutes, and outperforms quinoa on protein and iron. UK consumer awareness is growing rapidly driven by health food influencers and diaspora communities. Supply chains are maturing and UK-compliant packaged formats are now available.',
+    buyerTip:"Fonio's biggest retail opportunity right now is the free-from aisle — not the world foods section. Position it alongside quinoa and teff, lead with the gluten-free and protein story, and the West African origin becomes a premium differentiator rather than a barrier.",
+    demandSignals:[
+      {icon:'📈',label:'UK Google Search Trend',value:'+340% over 3 years',color:'var(--green)'},
+      {icon:'🛒',label:'Amazon UK Listings',value:'47 products, avg 4.2★',color:'var(--blue)'},
+      {icon:'📱',label:'TikTok #fonio views',value:'12M+ and climbing',color:'var(--purple)'},
+      {icon:'🏪',label:'UK Stockists (independent)',value:'~200 and growing',color:'var(--gold)'},
+    ],
+    ukCompetitors:[
+      {retailer:'Planet Organic',product:'Daaku Fonio 500g',price:'£5.49'},
+      {retailer:'Amazon UK',product:'Zogo Foods Fonio 1kg',price:'£8.99'},
+      {retailer:'Ocado',product:'Yolélé Fonio 400g',price:'£4.99'},
+      {retailer:'Independent Health Stores',product:'Various brands',price:'£5–£9/400g'},
+    ],
+    marginSnapshot:{fob:'£1.20–£1.80/kg',landed:'£2.80–£3.50/kg',wholesale:'£4.00–£5.50/kg',retail:'£6.00–£9.00/kg',margin:'45–60%'},
+    compliance:[
+      {cls:'ci-pass',icon:'fa-check',text:'0% import duty under DCTS (HS 1008.90 raw grain)'},
+      {cls:'ci-pass',icon:'fa-check',text:'Not a Novel Food — no FSA Novel Food authorisation required'},
+      {cls:'ci-pass',icon:'fa-check',text:'Naturally gluten-free — needs lab cert for on-pack claim but no regulatory barrier'},
+      {cls:'ci-warn',icon:'fa-triangle-exclamation',text:'UK English labelling mandatory — most current stock is labelled for French/EU market'},
+      {cls:'ci-warn',icon:'fa-triangle-exclamation',text:'Phytosanitary certificate required — allow 2–4 weeks lead time from exporter'},
+      {cls:'ci-info',icon:'fa-circle-info',text:'Organic certification must be UK-approved body (Soil Association), not just EU organic'},
+    ],
+    suppliers:[
+      {name:'Sahel Grain Co.',location:'Bamako, Mali',moq:'500kg',certs:'Organic available',status:'Verified'},
+      {name:'Dakar Agri Exports',location:'Dakar, Senegal',moq:'200kg',certs:'Fairtrade, Organic',status:'Verified'},
+      {name:'Guinea Grain Cooperative',location:'Conakry, Guinea',moq:'1000kg',certs:'None listed',status:'Unverified'},
+    ],
+    faqs:[
+      {q:'Raw grain or retail-ready packaged — which should I buy?',a:'For UK retail, retail-ready packaged saves packing cost and time but almost all current retail-ready stock is labelled for the EU/French market and will need relabelling. Raw grain gives you more control and typically better margin, but you need a registered UK packing facility. Many new importers start with retail-ready and relabel while they test the market.'},
+      {q:'What is the minimum viable first order?',a:'Realistically £3,000–£6,000 landed for a market test. That gets you roughly 500–800kg which gives you enough stock to run 3–6 months of D2C sales and approach independent retailers without running out. Below this you struggle to spread freight costs meaningfully.'},
+      {q:'Which UK retail channel is easiest to enter first?',a:'Independent health food stores and online (D2C or Amazon UK) are the most accessible first channels — lower barrier to entry, shorter ranging cycles, and actively looking for differentiated products. Supermarkets typically require minimum 12 months of sales history and BRCGS AA certification.'},
+      {q:'How does fonio compare to quinoa for a buyer?',a:'Fonio cooks in 5 minutes vs 15 for quinoa. Comparable protein profile, higher iron, lighter texture. The African origin story and sustainability credentials are strong differentiators. The key disadvantage is lower consumer awareness — but that is changing fast and being early is an advantage right now.'},
+    ],
+  },
+  Moringa:{
+    emoji:'🌿',
+    headline:'The wellness ingredient UK health retailers are actively seeking',
+    summary:'Moringa leaf powder is one of the most nutrient-dense foods on earth and has achieved mainstream status in the UK wellness market. Holland & Barrett, Planet Organic and multiple D2C brands already stock it. Supply from Ghana and Senegal is reliable. High margin, established demand, no Novel Food hurdles.',
+    buyerTip:'Moringa is most profitable in small-format premium packaging (100g–200g). Lead with Organic certification and African origin. The price per kg looks extreme but it is normal for this category. Avoid generic white-label — buyers respond to authentic sourcing stories.',
+    demandSignals:[
+      {icon:'📈',label:'UK Search Trend',value:'+180% over 5 years',color:'var(--green)'},
+      {icon:'🛒',label:'Amazon UK Listings',value:'200+ products',color:'var(--blue)'},
+      {icon:'🏪',label:'Holland & Barrett SKUs',value:'8 active listings',color:'var(--gold)'},
+      {icon:'💊',label:'Market segment',value:'Supplements + Food ingredient',color:'var(--purple)'},
+    ],
+    ukCompetitors:[
+      {retailer:'Holland & Barrett',product:'Moringa Powder 100g',price:'£9.99'},
+      {retailer:'Planet Organic',product:'Organic Moringa 200g',price:'£14.99'},
+      {retailer:'Amazon UK',product:'Moringa Capsules 500mg',price:'£8–£18'},
+      {retailer:'Naturya',product:'Organic Moringa Powder 200g',price:'£11.99'},
+    ],
+    marginSnapshot:{fob:'£3.00–£6.00/kg',landed:'£5.50–£8.50/kg',wholesale:'£12–£18/kg',retail:'£40–£80/kg equiv',margin:'55–70%'},
+    compliance:[
+      {cls:'ci-pass',icon:'fa-check',text:'0% import duty (HS 0712.90 dried vegetables)'},
+      {cls:'ci-pass',icon:'fa-check',text:'Not a Novel Food in the UK — established use as food ingredient'},
+      {cls:'ci-warn',icon:'fa-triangle-exclamation',text:'If sold as supplement (capsules/tablets), requires MHRA food supplement compliance'},
+      {cls:'ci-warn',icon:'fa-triangle-exclamation',text:'Health claims must comply with UK retained nutrition/health claims regulation'},
+      {cls:'ci-info',icon:'fa-circle-info',text:'Phytosanitary certificate required for dried leaf/powder imports'},
+    ],
+    suppliers:[
+      {name:'Ghana Premium Produce',location:'Accra, Ghana',moq:'100kg',certs:'Organic, Fairtrade',status:'Verified'},
+      {name:'Dakar Agri Exports',location:'Dakar, Senegal',moq:'50kg',certs:'Organic available',status:'Verified'},
+    ],
+    faqs:[
+      {q:'Powder or capsules — which format sells better?',a:'Powder sells better in health food stores and D2C. Capsules dominate on Amazon UK and pharmacy channels. Starting with powder is lower cost and more versatile. Capsule contract manufacturing adds £3–£8/kg to your cost but significantly broadens channel options.'},
+      {q:'What health claims can I make on packaging?',a:'In the UK you can only make claims that appear on the UK authorised health claims register. General wellness language like "nutrient-rich" or "a source of iron" (if the product qualifies) is safer. Avoid unsubstantiated claims like "boosts immunity" — Trading Standards actively enforce this.'},
+      {q:'What is the realistic wholesale price to major health retailers?',a:'Major health retailers typically pay 30–40% of their retail shelf price. At Holland & Barrett retail of £9.99/100g (£100/kg equiv), expect to sell at £30–£40/kg wholesale. Your landed cost of £5–£8/kg leaves healthy margin but retailers also expect marketing support, listing fees and promotional pricing.'},
+    ],
+  },
+  Hibiscus:{
+    emoji:'🌺',
+    headline:'Crossing from diaspora staple to premium UK wellness tea',
+    summary:'Dried hibiscus flower (bissap in West Africa, sorrel in the Caribbean) is crossing from the diaspora grocery market into the mainstream UK premium tea market. High vitamin C, striking red colour and tart flavour make it highly marketable. Pukka and Clipper already stock hibiscus-blend teas.',
+    buyerTip:"The opportunity gap in hibiscus right now is premium loose-leaf targeting the specialty tea buyer — think Fortnum & Mason customer, not Holland & Barrett. The diaspora market is established but competitive on price. The premium wellness market is early and will pay for a proper brand story.",
+    demandSignals:[
+      {icon:'📈',label:'UK Herbal Tea Market',value:'£130M+ growing at 5% CAGR',color:'var(--green)'},
+      {icon:'🛒',label:'Amazon UK Listings',value:'80+ products',color:'var(--blue)'},
+      {icon:'🍵',label:'Premium brands stocking',value:'Pukka, Clipper, independents',color:'var(--gold)'},
+      {icon:'📱',label:'Positioning',value:'Wellness + cultural authenticity',color:'var(--purple)'},
+    ],
+    ukCompetitors:[
+      {retailer:'Holland & Barrett',product:'Hibiscus Tea 40 bags',price:'£5.99'},
+      {retailer:'Waitrose',product:'Pukka Hibiscus & Rosehip',price:'£3.49'},
+      {retailer:'Amazon UK',product:'Raw Hibiscus Flowers 200g',price:'£7.99'},
+      {retailer:'Afro-Caribbean grocers',product:'Loose dried hibiscus',price:'£2–£4/100g'},
+    ],
+    marginSnapshot:{fob:'£2.00–£5.00/kg',landed:'£4.00–£7.00/kg',wholesale:'£10–£20/kg',retail:'£30–£80/kg equiv',margin:'60–75%'},
+    compliance:[
+      {cls:'ci-pass',icon:'fa-check',text:'0% import duty (HS 0712.90 dried flowers)'},
+      {cls:'ci-pass',icon:'fa-check',text:'Not a Novel Food — established traditional use in UK'},
+      {cls:'ci-warn',icon:'fa-triangle-exclamation',text:'Medicinal tea claims may require MHRA Traditional Herbal Registration'},
+      {cls:'ci-info',icon:'fa-circle-info',text:'Phytosanitary certificate required for dried flower imports'},
+      {cls:'ci-info',icon:'fa-circle-info',text:'Pesticide residue testing recommended — major retailers will require MRL compliance data'},
+    ],
+    suppliers:[
+      {name:'Ghana Premium Produce',location:'Accra, Ghana',moq:'100kg',certs:'Organic available',status:'Verified'},
+      {name:'West African Foods Ltd',location:'London, UK (importer)',moq:'10kg',certs:'None',status:'Verified'},
+    ],
+    faqs:[
+      {q:'Loose flower or tea bags — which to start with?',a:'Loose dried flower is the easiest entry point — lower MOQ, no additional processing, and appeals to both the diaspora grocery market and premium wellness consumers. Tea bags require contract packing which adds cost and complexity. Start with loose, build volume, then expand to bags once you have retailer relationships.'},
+      {q:'How do I position this for mainstream UK retailers vs diaspora stores?',a:'Two different products, two different stories. For mainstream wellness, lead with vitamin C content, the deep red colour, and the tart refreshing taste — clean minimal packaging. For diaspora stores, lean into authenticity: bissap/sorrel naming, traditional preparation notes, family-farm sourcing. Both work but do not blend the messaging.'},
+    ],
+  },
+  Baobab:{
+    emoji:'🌰',
+    headline:'Novel Food authorised — the high-margin African superfood powder',
+    summary:"Baobab fruit powder has formal UK Novel Food authorisation, meaning it is cleared for sale without restriction. It has one of the highest vitamin C concentrations of any food, a pleasant caramel-citrus flavour, and premium positioning in the UK health food market. Aduna is the UK market leader — there is room for challengers.",
+    buyerTip:"Baobab is a storytelling product. The baobab tree lives 1,000+ years, grows in remote Africa, and the fruit is hand-harvested by rural women cooperatives. That story, told well on packaging and in retailer presentations, is worth more than any product specification.",
+    demandSignals:[
+      {icon:'📈',label:'Search trend',value:'Stable premium niche',color:'var(--gold)'},
+      {icon:'🏪',label:'Key Stockists',value:'Planet Organic, Whole Foods, Ocado',color:'var(--green)'},
+      {icon:'💰',label:'Retail price range',value:'£15–£35/200g',color:'var(--purple)'},
+      {icon:'🌍',label:'Wild harvested appeal',value:'Strong sustainability narrative',color:'var(--blue)'},
+    ],
+    ukCompetitors:[
+      {retailer:'Planet Organic',product:'Aduna Baobab Powder 275g',price:'£12.99'},
+      {retailer:'Whole Foods UK',product:'Organic Baobab 250g',price:'£14.50'},
+      {retailer:'Amazon UK',product:'Baobab Powder 500g',price:'£15.99'},
+    ],
+    marginSnapshot:{fob:'£4.00–£8.00/kg',landed:'£6.50–£10.00/kg',wholesale:'£20–£35/kg',retail:'£75–£175/kg equiv',margin:'65–75%'},
+    compliance:[
+      {cls:'ci-pass',icon:'fa-check',text:'UK Novel Food authorisation confirmed — cleared for sale as food ingredient'},
+      {cls:'ci-pass',icon:'fa-check',text:'0% import duty (HS 0813.40 dried fruit)'},
+      {cls:'ci-warn',icon:'fa-triangle-exclamation',text:'Wild harvested claims need to be substantiated — traceability documentation required'},
+      {cls:'ci-info',icon:'fa-circle-info',text:'Phytosanitary certificate required'},
+      {cls:'ci-info',icon:'fa-circle-info',text:'Organic certification requires UK-approved body (Soil Association etc)'},
+    ],
+    suppliers:[
+      {name:'Ghana Premium Produce',location:'Accra, Ghana',moq:'50kg',certs:'Organic, Wild-harvested',status:'Verified'},
+      {name:'Sahel Grain Co.',location:'Bamako, Mali',moq:'100kg',certs:'Wild-harvested cert',status:'Verified'},
+    ],
+    faqs:[
+      {q:'What does Novel Food authorisation mean in practice for a buyer?',a:"Baobab was classified as a Novel Food because it wasn't widely consumed in Europe before 1997. It has had authorisation since 2008 (EU) retained by the UK post-Brexit. In practice you can sell it freely as a food ingredient — you cannot make unauthorised health claims, but that applies to everything. The Novel Food status is actually a selling point as it means the product has been formally safety assessed."},
+      {q:'Why is the retail price so high per kg?',a:'Baobab is sold in small premium formats — typically 200–275g — at £12–£15 per pack. The price per kg looks extreme when you do the maths. This is normal for the premium superfood category. Your challenge is justifying the price to the consumer, done through the vitamin C story and the African provenance narrative.'},
+    ],
+  },
+  'Cassava Flour':{
+    emoji:'🫘',
+    headline:'The gluten-free flour the UK free-from market has been waiting for',
+    summary:"Cassava flour is 100% grain-free, nut-free and Paleo-friendly — the only alternative flour that behaves almost identically to wheat flour in baking. UK demand is surging as almond flour prices rise and consumers seek nut-free, school-safe options. West African origin is both a quality story and a supply advantage.",
+    buyerTip:"Position cassava flour in the free-from aisle alongside almond and coconut flour, not in the world foods section. The buyer is a health-conscious home baker, not a diaspora shopper. Lead with grain-free, Paleo, nut-free messaging. The African origin becomes a sustainability and provenance premium.",
+    demandSignals:[
+      {icon:'📈',label:'UK Free-From Market',value:'£916M and growing 8% CAGR',color:'var(--green)'},
+      {icon:'🛒',label:'Amazon UK searches',value:'"cassava flour" +180% since 2020',color:'var(--blue)'},
+      {icon:'🏪',label:'Whole Foods placement',value:'Free-from baking aisle, premium shelf',color:'var(--gold)'},
+      {icon:'👨‍🍳',label:'Paleo community demand',value:'Top 3 requested flour alternative',color:'var(--purple)'},
+    ],
+    ukCompetitors:[
+      {retailer:'Amazon UK',product:"Otto's Naturals Cassava Flour 2.27kg",price:'£22.99'},
+      {retailer:'Planet Organic',product:'Organic Cassava Flour 500g',price:'£6.99'},
+      {retailer:'Holland & Barrett',product:'Cassava Flour 500g',price:'£5.49'},
+      {retailer:'Whole Foods UK',product:'Various brands 500g–1kg',price:'£5–£12'},
+    ],
+    marginSnapshot:{fob:'£0.80–£1.40/kg',landed:'£2.00–£3.50/kg',wholesale:'£5–£8/kg',retail:'£10–£20/kg',margin:'50–65%'},
+    compliance:[
+      {cls:'ci-pass',icon:'fa-check',text:'0% import duty under DCTS (HS 1106.20 cassava flour)'},
+      {cls:'ci-pass',icon:'fa-check',text:'Not a Novel Food — long-established use in UK as food ingredient'},
+      {cls:'ci-pass',icon:'fa-check',text:'Naturally gluten-free — needs lab cert for on-pack claim, straightforward to obtain'},
+      {cls:'ci-warn',icon:'fa-triangle-exclamation',text:'Cassava naturally contains cyanogenic compounds — processing must remove these; supplier should provide safety data'},
+      {cls:'ci-warn',icon:'fa-triangle-exclamation',text:'UK English labelling mandatory; most stock comes labelled for domestic West African market'},
+      {cls:'ci-info',icon:'fa-circle-info',text:'Phytosanitary certificate required for flour imports in most cases'},
+    ],
+    suppliers:[
+      {name:'Ghana Premium Produce',location:'Accra, Ghana',moq:'200kg',certs:'Organic, Gluten-Free tested',status:'Verified'},
+      {name:'West African Foods Ltd',location:'Manchester, UK (importer)',moq:'50kg',certs:'Gluten-Free cert',status:'Verified'},
+    ],
+    faqs:[
+      {q:'Is cassava flour the same as tapioca starch?',a:'No — and this matters for labelling and buyer conversations. Cassava flour is made from the whole cassava root (dried and ground) and behaves like wheat flour. Tapioca starch is extracted from cassava and is a pure starch, not a flour. They have very different functional properties. Make sure your supplier is providing cassava flour, not tapioca starch, if that is what you are selling.'},
+      {q:'What is the safety concern with cassava and how do I address it?',a:"Raw cassava contains cyanogenic glycosides which must be removed through processing (fermentation, drying, milling). Properly processed cassava flour from a reputable supplier has negligible cyanide levels. Ask your supplier for safety testing data showing HCN levels are within safe limits. This is standard in the industry and a reputable supplier will have this documentation."},
+      {q:'Which channel should I target first — retail or foodservice?',a:'Retail is faster to enter for cassava flour. Target independent health food stores, Planet Organic, and Amazon UK first. The consumer is health-conscious and already searching for cassava flour. Foodservice is a longer game — worth pursuing once you have retail presence, particularly for Paleo and gluten-free restaurants.'},
+    ],
+  },
+  'Tiger Nuts':{
+    emoji:'🥜',
+    headline:'The prebiotic superfood that is nut-free — a rare and valuable combination',
+    summary:"Tiger nuts are not nuts — they are small root vegetables (tubers) from West Africa. This makes them ideal for nut-free, school-safe product ranges while delivering impressive prebiotic fibre content. UK demand is growing fast as the gut health trend meets free-from requirements. Ghana is the world's primary commercial supplier.",
+    buyerTip:"Lead with the nut-free and prebiotic story simultaneously — this is a rare combination in the UK health market. School lunch boxes and nut-free workplaces are an underserved opportunity. The horchata angle (traditional Spanish tiger nut milk drink) gives you a ready-made narrative for the premium drinks market.",
+    demandSignals:[
+      {icon:'📈',label:'UK Gut Health Market',value:'£1.2B growing at 7% CAGR',color:'var(--green)'},
+      {icon:'🎒',label:'Nut-Free Snack demand',value:'Schools, airlines, offices — high demand',color:'var(--blue)'},
+      {icon:'🛒',label:'Amazon UK trend',value:'"tiger nuts" searches +250% since 2019',color:'var(--gold)'},
+      {icon:'🥛',label:'Plant milk opportunity',value:'Horchata/tiger nut milk emerging UK niche',color:'var(--purple)'},
+    ],
+    ukCompetitors:[
+      {retailer:'Holland & Barrett',product:'Organic Tiger Nuts 250g',price:'£4.99'},
+      {retailer:'Amazon UK',product:'Raw Tiger Nuts 1kg',price:'£11.99'},
+      {retailer:'Planet Organic',product:'Organic Tiger Nuts 500g',price:'£8.99'},
+      {retailer:'Independent health stores',product:'Various formats',price:'£5–£15/250g'},
+    ],
+    marginSnapshot:{fob:'£1.50–£2.50/kg',landed:'£3.00–£4.50/kg',wholesale:'£6–£10/kg',retail:'£12–£24/kg',margin:'55–68%'},
+    compliance:[
+      {cls:'ci-pass',icon:'fa-check',text:'0% import duty under DCTS (HS 2008.99 prepared, or 1212.99 dried)'},
+      {cls:'ci-pass',icon:'fa-check',text:'Not a Novel Food — established UK food ingredient'},
+      {cls:'ci-pass',icon:'fa-check',text:'Not a nut — allergen-free for tree nut and peanut purposes (always state clearly on label)'},
+      {cls:'ci-warn',icon:'fa-triangle-exclamation',text:'Phytosanitary certificate required for dried tiger nuts'},
+      {cls:'ci-info',icon:'fa-circle-info',text:'Organic certification from UK-approved body adds significant price premium'},
+    ],
+    suppliers:[
+      {name:'Ghana Premium Produce',location:'Accra, Ghana',moq:'100kg',certs:'Organic, Gluten-Free',status:'Verified'},
+      {name:'West African Foods Ltd',location:'Manchester, UK',moq:'20kg',certs:'None additional',status:'Verified'},
+    ],
+    faqs:[
+      {q:'What formats sell best — whole, sliced or flour?',a:'Whole dried tiger nuts are the most common format and the easiest to import. Sliced or flaked versions require processing and have shorter shelf life. Tiger nut flour is a premium product suited to the Paleo baking market. Tiger nut milk (horchata) is a high-margin option requiring more processing investment but commands strong price premium as a plant milk alternative.'},
+      {q:'Can I make nut-free claims on the packaging?',a:'Yes — tiger nuts are not botanically nuts and are not included in the UK 14 major allergens. You can legitimately state "nut-free" on packaging. This is a significant commercial advantage. However, you must ensure your supply chain and any processing facility is genuinely free from nut contamination — cross-contamination would undermine the claim and create liability.'},
+    ],
+  },
+  'Shea Butter':{
+    emoji:'🧴',
+    headline:'UK natural beauty staple with food-grade crossover — dual market opportunity',
+    summary:"Shea butter is already an established UK natural beauty ingredient, stocked by The Body Shop, Lush, Holland & Barrett and hundreds of independent brands. Food-grade shea is also used in chocolate and baked goods. The ethical sourcing story — women cooperatives in West Africa — is one of the most powerful in the natural products market.",
+    buyerTip:"Shea butter's biggest commercial advantage right now is the ethics story, not the product itself. Women cooperatives in Ghana and Burkina Faso harvesting by hand, fair wages, community investment — this narrative commands a premium in UK natural beauty retail. Source with a traceable supply chain and make the story central to your brand.",
+    demandSignals:[
+      {icon:'📈',label:'UK Natural Beauty Market',value:'£1.5B growing at 6% CAGR',color:'var(--green)'},
+      {icon:'🏪',label:'Major UK Stockists',value:'The Body Shop, Lush, H&B, Superdrug',color:'var(--blue)'},
+      {icon:'🌍',label:'Ethical sourcing premium',value:'+20–35% price uplift vs commodity grade',color:'var(--gold)'},
+      {icon:'💄',label:'Clean beauty trend',value:'Shea core ingredient in 40%+ natural formulations',color:'var(--purple)'},
+    ],
+    ukCompetitors:[
+      {retailer:'The Body Shop',product:'Shea Body Butter 200ml',price:'£16.00'},
+      {retailer:'Holland & Barrett',product:'Organic Raw Shea Butter 100g',price:'£7.99'},
+      {retailer:'Amazon UK',product:'Raw Unrefined Shea Butter 500g',price:'£12.99'},
+      {retailer:'Lush',product:'Shea-based solid moisturisers',price:'£8–£14'},
+    ],
+    marginSnapshot:{fob:'£1.50–£3.00/kg raw, £4–£8/kg refined',landed:'£3.00–£5.00/kg',wholesale:'£8–£15/kg',retail:'£15–£40/kg',margin:'60–75%'},
+    compliance:[
+      {cls:'ci-pass',icon:'fa-check',text:'0% import duty under DCTS (HS 1515.90 other vegetable fats)'},
+      {cls:'ci-pass',icon:'fa-check',text:'Not a Novel Food for food use; no Novel Food issues for cosmetic use'},
+      {cls:'ci-warn',icon:'fa-triangle-exclamation',text:'Cosmetic use requires UK Cosmetic Product Safety Report (CPSR) — requires a qualified cosmetic chemist'},
+      {cls:'ci-warn',icon:'fa-triangle-exclamation',text:'Cosmetic products must be registered on the UK Cosmetic Product Notification Portal (SCPN)'},
+      {cls:'ci-info',icon:'fa-circle-info',text:'Food grade shea requires food safety documentation; cosmetic grade has different spec requirements'},
+      {cls:'ci-info',icon:'fa-circle-info',text:'Fairtrade or RSPO certification adds significant buyer confidence and price premium'},
+    ],
+    suppliers:[
+      {name:'Ghana Premium Produce',location:'Accra, Ghana',moq:'50kg',certs:'Organic, Fairtrade',status:'Verified'},
+      {name:'Burkina Fresh Exports',location:'Ouagadougou, Burkina Faso',moq:'100kg',certs:'Women cooperative cert, Organic',status:'Unverified'},
+    ],
+    faqs:[
+      {q:'What is the difference between raw unrefined and refined shea butter?',a:'Raw unrefined shea (ivory or yellow colour, strong nutty smell) retains all active compounds and is preferred in natural beauty products where the properties matter. Refined shea (white, odourless) has been processed to remove colour and smell — preferred for cosmetic formulations where the scent would interfere. Raw commands a higher price. Most UK natural beauty buyers want unrefined.'},
+      {q:'Do I need separate approval for food grade vs cosmetic grade?',a:'Yes — they are essentially different products with different regulatory requirements. Food grade shea requires food safety documentation (HACCP, food business registration). Cosmetic grade requires a UK Cosmetic Product Safety Report and registration on the SCPN portal. You can source both from the same supplier but they must be separately documented and segregated.'},
+      {q:'Is there a minimum viable order size for the UK natural beauty market?',a:'Many UK natural beauty brands operate at small scale and are willing to buy 5–25kg for initial trials. Start with 50–100kg which gives you enough to supply several small brands and test the market. The sweet spot for regular supply to established brands is 200–500kg per order.'},
+    ],
+  },
+};
+
+// ===================== STATE =====================
+let currentView = 'dashboard';
+let currentSpotlight = 'Fonio';
+let producers = JSON.parse(localStorage.getItem('ts_producers')||'[]');
+
+// ===================== NAVIGATION =====================
+document.querySelectorAll('.nav-item').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const view=btn.dataset.view;
+    if(!view) return;
+    document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const names={dashboard:'Dashboard',buyerhub:'Buyer Hub',regulations:'UK Regulations',directory:'Trade Directory',matchmaking:'Matchmaking',produce:'Local Produce',logistics:'Logistics & Hubs',niche:'Niche Markets',calculator:'Margin Calculator',myproducers:'My Producer Leads'};
+    document.getElementById('breadcrumb-current').textContent=names[view]||view;
+    currentView=view;
+    renderView(view);
+  });
+});
+
+function goToView(view){
+  const btn=document.querySelector(`.nav-item[data-view="${view}"]`);
+  if(btn) btn.click();
+}
+
+function renderView(view){
+  const c=document.getElementById('view-container');
+  const fns={dashboard:renderDashboard,buyerhub:renderBuyerHub,regulations:renderRegulations,directory:renderDirectory,matchmaking:renderMatchmaking,produce:renderProduce,logistics:renderLogistics,niche:renderNiche,calculator:renderCalculator,myproducers:renderMyProducers};
+  if(fns[view]) fns[view](c);
+}
+
+// ===================== GLOBAL SEARCH =====================
+function globalSearch(){
+  const q=(document.getElementById('global-search')?.value||'').toLowerCase().trim();
+  const drop=document.getElementById('search-drop');
+  if(!q||q.length<2){drop.style.display='none';return;}
+  const results=[];
+  PRODUCE_DATA.forEach(p=>{if((p.name+p.category+p.notes).toLowerCase().includes(q)) results.push({label:p.name,sub:p.category,view:'produce',search:p.name});});
+  DIRECTORY_DATA.forEach(d=>{if((d.name+d.products+d.location).toLowerCase().includes(q)) results.push({label:d.name,sub:d.type,view:'directory'});});
+  NICHE_DATA.forEach(n=>{if((n.market+n.opportunity).toLowerCase().includes(q)) results.push({label:n.market,sub:'Niche Market',view:'niche'});});
+  Object.keys(BUYER_SPOTLIGHTS).forEach(name=>{if(name.toLowerCase().includes(q)) results.push({label:name+' — Buyer Dossier',sub:'Buyer Hub',view:'buyerhub',spotlight:name});});
+  if(!results.length){drop.innerHTML='<div style="padding:12px 14px;color:var(--text3);font-size:0.8rem;">No results found</div>';drop.style.display='block';return;}
+  drop.innerHTML=results.slice(0,8).map(r=>`<div class="search-result-item" onclick="handleSearchClick('${r.view}','${r.search||''}','${r.spotlight||''}')"><i class="fa-solid fa-search" style="color:var(--text3);font-size:0.75rem;"></i><div><div>${r.label}</div></div><span class="search-result-cat">${r.sub}</span></div>`).join('');
+  drop.style.display='block';
+}
+function handleSearchClick(view,search,spotlight){
+  closeGlobalSearch();
+  document.getElementById('global-search').value='';
+  if(spotlight){currentSpotlight=spotlight;}
+  goToView(view);
+  if(search){setTimeout(()=>{const s=document.getElementById('prod-search');if(s){s.value=search;filterProduce();}},80);}
+}
+function closeGlobalSearch(){document.getElementById('search-drop').style.display='none';}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.topbar-search')) closeGlobalSearch();
+  if(!e.target.closest('.autocomplete-wrap')){const dd=document.getElementById('c-product-dropdown');if(dd) dd.style.display='none';}
+});
+
+// ===================== MODAL =====================
+function openModal(){document.getElementById('modal-overlay').classList.add('open');}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+function saveProducer(){
+  const name=document.getElementById('m-name').value.trim();
+  if(!name){showToast('Enter a producer name','error');return;}
+  producers.push({name,country:document.getElementById('m-country').value,location:document.getElementById('m-location').value,product:document.getElementById('m-product').value,volume:document.getElementById('m-volume').value,margin:document.getElementById('m-margin').value,buyer:document.getElementById('m-buyer').value,notes:document.getElementById('m-notes').value});
+  localStorage.setItem('ts_producers',JSON.stringify(producers));
+  closeModal();
+  showToast('Producer lead saved!');
+  if(currentView==='myproducers') renderView('myproducers');
+  ['m-name','m-country','m-location','m-product','m-volume','m-buyer','m-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+}
+function deleteProducer(i){producers.splice(i,1);localStorage.setItem('ts_producers',JSON.stringify(producers));renderView('myproducers');}
+function showToast(msg){
+  document.getElementById('toast-msg').textContent=msg;
+  const t=document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ===================== DASHBOARD =====================
+function renderDashboard(c){
+  c.innerHTML=`
+  <div class="section-header">
+    <div><div class="section-title">Dashboard</div><div class="section-subtitle">Africa & Caribbean → UK Trade Intelligence</div></div>
+    <button class="btn btn-primary" onclick="goToView('buyerhub')"><i class="fa-solid fa-store"></i> Open Buyer Hub</button>
+  </div>
+  <div class="grid-3" style="margin-bottom:16px;">
+    <div class="stat-card"><div class="stat-label">Produce in Database</div><div class="stat-value" style="color:var(--gold);">${PRODUCE_DATA.length}</div><div class="stat-sub">African & Caribbean</div></div>
+    <div class="stat-card"><div class="stat-label">Avg Duty Rate</div><div class="stat-value" style="color:var(--green);">0–6.4%</div><div class="stat-sub">Most lines duty-free (DCTS)</div></div>
+    <div class="stat-card"><div class="stat-label">Typical Gross Margin</div><div class="stat-value" style="color:var(--purple);">45–75%</div><div class="stat-sub">High-value superfood lines</div></div>
+  </div>
+  <div class="grid-2" style="margin-bottom:16px;">
+    <div class="card"><div class="card-title">Margin by Product</div><canvas id="marginChart" height="180"></canvas></div>
+    <div class="card">
+      <div class="card-title">🔥 Top Opportunities Right Now</div>
+      ${[
+        {name:'Fonio',icon:'🌾',score:94,reason:'High margin, zero duty, trending demand, limited competition'},
+        {name:'Moringa',icon:'🌿',score:88,reason:'Established UK demand, proven retail channels'},
+        {name:'Hibiscus',icon:'🌺',score:82,reason:'Crossing from diaspora to mainstream tea market'},
+      ].map(o=>`
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+        <div style="font-size:1.3rem;">${o.icon}</div>
+        <div style="flex:1;"><div style="font-weight:600;font-size:0.85rem;">${o.name}</div><div style="font-size:0.75rem;color:var(--text2);">${o.reason}</div></div>
+        <div style="font-size:0.82rem;color:var(--green);font-weight:700;">${o.score}%</div>
+        <button class="btn btn-ghost" style="padding:4px 10px;font-size:0.72rem;" onclick="currentSpotlight='${o.name}';goToView('buyerhub')">View</button>
+      </div>`).join('')}
+    </div>
+  </div>
+  <div class="alert alert-gold"><i class="fa-solid fa-triangle-exclamation"></i><div>TradeSync provides intelligence for decision-making. Always verify duty rates, regulations and supplier credentials before committing to import orders. Prices and regulations change — check HMRC Trade Tariff and APHA for the latest.</div></div>`;
+  setTimeout(()=>{
+    const ctx=document.getElementById('marginChart');
+    if(!ctx) return;
+    new Chart(ctx,{type:'bar',data:{labels:PRODUCE_DATA.map(p=>p.name),datasets:[{label:'Margin Rating',data:[92,85,72,65,88,82,55,80],backgroundColor:PRODUCE_DATA.map(p=>p.margin==='High'?'rgba(61,214,140,0.6)':p.margin==='Medium-High'?'rgba(232,168,56,0.6)':'rgba(88,166,255,0.5)'),borderRadius:4}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b949e',font:{size:10}},grid:{display:false}},y:{ticks:{color:'#8b949e',font:{size:10}},grid:{color:'rgba(42,52,65,0.5)'}}}}});
+  },50);
+}
+
+// ===================== BUYER HUB =====================
+function renderBuyerHub(c){
+  c.innerHTML=`
+  <div class="section-header"><div><div class="section-title">Buyer Intelligence Hub</div><div class="section-subtitle">Everything a UK buyer needs — demand data, compliance, pricing, suppliers, FAQs</div></div></div>
+  <div class="buyer-hero">
+    <div class="buyer-hero-text">
+      <h2>Your African & Caribbean Sourcing Centre</h2>
+      <p>Select a product below to see its complete buyer dossier — demand trends, on-shelf competitor pricing, compliance summary, verified supplier shortlist, and answers to the questions your buying team will ask.</p>
+    </div>
+    <div class="buyer-hero-stats">
+      <div class="buyer-hero-stat"><div class="val">4</div><div class="lbl">Spotlights</div></div>
+      <div class="buyer-hero-stat"><div class="val">0%</div><div class="lbl">Duty Most Lines</div></div>
+      <div class="buyer-hero-stat"><div class="val">60%+</div><div class="lbl">Typical Margin</div></div>
+    </div>
+  </div>
+  <div class="spotlight-tabs">
+    ${Object.keys(BUYER_SPOTLIGHTS).map(name=>`<button class="spotlight-tab ${name===currentSpotlight?'active':''}" onclick="switchSpotlight('${name}')">${BUYER_SPOTLIGHTS[name].emoji} ${name}</button>`).join('')}
+  </div>
+  <div id="spotlight-content"></div>`;
+  renderSpotlight(currentSpotlight);
+}
+
+function switchSpotlight(name){
+  currentSpotlight=name;
+  document.querySelectorAll('.spotlight-tab').forEach(t=>t.classList.toggle('active',t.textContent.trim().startsWith(BUYER_SPOTLIGHTS[name].emoji)));
+  renderSpotlight(name);
+}
+
+function renderSpotlight(name){
+  const s=BUYER_SPOTLIGHTS[name];
+  if(!s) return;
+  document.getElementById('spotlight-content').innerHTML=`
+  <div class="alert alert-gold"><i class="fa-solid fa-quote-left"></i><div><strong>Buyer Insight:</strong> ${s.buyerTip}</div></div>
+  <div class="spotlight-grid">
+    <div class="gap-16">
+      <div class="card">
+        <div class="card-title">${s.emoji} ${name} — Market Overview</div>
+        <div style="font-size:0.9rem;font-weight:600;font-family:'Syne',sans-serif;margin-bottom:8px;color:var(--gold);">${s.headline}</div>
+        <div style="font-size:0.82rem;color:var(--text2);line-height:1.7;">${s.summary}</div>
+      </div>
+      <div class="card">
+        <div class="card-title">📊 Demand Signals</div>
+        ${s.demandSignals.map(d=>`<div class="demand-signal"><div class="demand-signal-icon">${d.icon}</div><div style="flex:1;"><div class="demand-signal-label">${d.label}</div><div class="demand-signal-val">${d.value}</div></div><div class="demand-signal-badge" style="color:${d.color};">${d.value.split(' ')[0]}</div></div>`).join('')}
+      </div>
+      <div class="card">
+        <div class="card-title">🏪 What's Already on UK Shelves</div>
+        <div style="font-size:0.75rem;color:var(--text3);margin-bottom:10px;">Current competitor products and retail prices</div>
+        ${s.ukCompetitors.map(comp=>`<div class="competitor-row"><div><div>${comp.retailer}</div><div class="competitor-product">${comp.product}</div></div><div class="competitor-price">${comp.price}</div></div>`).join('')}
+      </div>
+      <div class="card">
+        <div class="card-title">💰 Margin Snapshot</div>
+        <div class="calc-result" style="margin:0;">
+          ${[['Supplier FOB Price',s.marginSnapshot.fob,'var(--text)'],['Typical Landed Cost UK',s.marginSnapshot.landed,'var(--text)'],['Wholesale to Retailer',s.marginSnapshot.wholesale,'var(--gold)'],['Retail Shelf Price (equiv)',s.marginSnapshot.retail,'var(--gold)'],['Gross Margin Range',s.marginSnapshot.margin,'var(--green)']].map(([l,v,col])=>`<div class="calc-row"><span class="label">${l}</span><span style="color:${col};font-weight:600;">${v}</span></div>`).join('')}
+        </div>
+        <button class="btn btn-green" style="width:100%;margin-top:12px;justify-content:center;" onclick="loadIntoCalc('${name}')"><i class="fa-solid fa-calculator"></i> Open in Margin Calculator</button>
+      </div>
+    </div>
+    <div class="gap-16">
+      <div class="card">
+        <div class="card-title">✅ Compliance at a Glance</div>
+        <div style="font-size:0.75rem;color:var(--text3);margin-bottom:10px;">Green = clear · Amber = action needed · Blue = note</div>
+        ${s.compliance.map(item=>`<div class="compliance-item"><div class="compliance-icon ${item.cls}"><i class="fa-solid ${item.icon}"></i></div><div>${item.text}</div></div>`).join('')}
+      </div>
+      <div class="card">
+        <div class="card-title">🤝 Supplier Shortlist</div>
+        <div style="font-size:0.75rem;color:var(--text3);margin-bottom:10px;">Request samples and references before committing.</div>
+        ${s.suppliers.map(sup=>`<div class="supplier-mini"><div><div class="supplier-mini-name">${sup.name}</div><div class="supplier-mini-detail">${sup.location} · MOQ: ${sup.moq} · ${sup.certs}</div></div><span class="badge ${sup.status==='Verified'?'badge-green':'badge-red'}">${sup.status}</span></div>`).join('')}
+        <button class="btn btn-ghost" style="width:100%;margin-top:10px;justify-content:center;font-size:0.78rem;" onclick="goToView('matchmaking')"><i class="fa-solid fa-handshake-angle"></i> View Full Matchmaking</button>
+      </div>
+      <div class="card">
+        <div class="card-title">❓ Buyer FAQs</div>
+        ${s.faqs.map(faq=>`<div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">${faq.q}<i class="fa-solid fa-chevron-down faq-chevron"></i></div><div class="faq-a">${faq.a}</div></div>`).join('')}
+      </div>
+      <div class="cta-box">
+        <h3>Ready to source ${name}?</h3>
+        <p>Save a supplier lead, run your margin calculation, or explore the produce database.</p>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="openModal()"><i class="fa-solid fa-plus"></i> Add Supplier Lead</button>
+          <button class="btn btn-ghost" onclick="loadIntoCalc('${name}')"><i class="fa-solid fa-calculator"></i> Calculate Margin</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ===================== REGULATIONS =====================
+function renderRegulations(c){
+  c.innerHTML=`
+  <div class="section-header"><div><div class="section-title">UK Import Regulations</div><div class="section-subtitle">Duties, phytosanitary, labelling and food safety requirements for Africa & Caribbean imports</div></div></div>
+  <div class="alert alert-gold"><i class="fa-solid fa-triangle-exclamation"></i><div>This is a summary guide. Always verify current duty rates on the <strong>HMRC UK Trade Tariff</strong> and phytosanitary requirements with <strong>APHA</strong> before importing. Regulations change.</div></div>
+  <div class="reg-card"><div class="reg-title"><span style="background:rgba(232,168,56,0.15);padding:6px 10px;border-radius:6px;font-size:0.8rem;">🏛️</span> UK Global Tariff (UKGT) & Preferential Rates</div>
+    <div class="reg-item"><div class="reg-key">UKGT Baseline</div><div class="reg-val">UK's standard tariff schedule since Brexit. Most agricultural commodities face low or zero rates. Always check HMRC Trade Tariff online tool with your specific HS code.</div></div>
+    <div class="reg-item"><div class="reg-key">DCTS (Dev. Countries)</div><div class="reg-val">Developing Countries Trading Scheme — replaces EU GSP. Most African countries qualify for Enhanced Preferences. Grains, spices, dried herbs typically 0% duty. Check individual country/product eligibility.</div></div>
+    <div class="reg-item"><div class="reg-key">UK-CARIFORUM EPA</div><div class="reg-val">Preferential trade agreement with Caribbean countries (Jamaica, Trinidad, Barbados etc). Most food products qualify for 0% or reduced duty with valid Certificate of Origin (EUR.1 or REX).</div></div>
+    <div class="reg-item"><div class="reg-key">Certificate of Origin</div><div class="reg-val">Required to claim preferential duty rates. Typically EUR.1 form (issued by exporting country customs) or REX declaration. Must accompany goods and be presented at UK customs.</div></div>
+  </div>
+  <div class="reg-card"><div class="reg-title"><span style="background:rgba(61,214,140,0.15);padding:6px 10px;border-radius:6px;font-size:0.8rem;">🌿</span> Phytosanitary & Plant Health</div>
+    <div class="reg-item"><div class="reg-key">Phytosanitary Cert</div><div class="reg-val">Required for most raw plant products (grains, dried herbs, fresh produce). Issued by the National Plant Protection Organisation (NPPO) in the exporting country. Allow 2–4 weeks from supplier.</div></div>
+    <div class="reg-item"><div class="reg-key">APHA Pre-notification</div><div class="reg-val">Animal and Plant Health Agency — most plant product imports must be pre-notified via IPAFFS (Import of products, animals, food and feed system) before arrival in the UK.</div></div>
+    <div class="reg-item"><div class="reg-key">Inspection on Arrival</div><div class="reg-val">APHA may inspect plant material at the border. Have all documentation ready: phyto certificate, IPAFFS pre-notification, commercial invoice, packing list.</div></div>
+    <div class="reg-item"><div class="reg-key">Fresh Produce</div><div class="reg-val">Additional requirements for fresh fruit and vegetables: conformity checks, pesticide MRL compliance, temperature records for refrigerated goods.</div></div>
+  </div>
+  <div class="reg-card"><div class="reg-title"><span style="background:rgba(88,166,255,0.15);padding:6px 10px;border-radius:6px;font-size:0.8rem;">🏷️</span> UK Food Labelling Requirements</div>
+    <div class="reg-item"><div class="reg-key">Language</div><div class="reg-val">All label information must be in English. Post-Brexit, EU labels are not automatically compliant. Most West African/Caribbean suppliers label for EU/French market — UK relabelling is commonly required.</div></div>
+    <div class="reg-item"><div class="reg-key">UK Importer Address</div><div class="reg-val">Mandatory. Your UK business name and address must appear on the label as the importer of record.</div></div>
+    <div class="reg-item"><div class="reg-key">Nutrition Declaration</div><div class="reg-val">Required for most pre-packaged foods. Must include energy (kJ/kcal), fat, saturated fat, carbohydrate, sugars, protein, salt. UK format required (not EU/US formats).</div></div>
+    <div class="reg-item"><div class="reg-key">Country of Origin</div><div class="reg-val">Mandatory for most unprocessed foods. "Product of Senegal" etc. must be accurate and visible.</div></div>
+    <div class="reg-item"><div class="reg-key">Allergen Labelling</div><div class="reg-val">14 major allergens must be emphasised (bold, colour etc.) where present. Check each product individually.</div></div>
+    <div class="reg-item"><div class="reg-key">PPDS (Natasha's Law)</div><div class="reg-val">Pre-packed for direct sale — full ingredient and allergen labelling required since Oct 2021.</div></div>
+    <div class="reg-item"><div class="reg-key">Net Quantity</div><div class="reg-val">Must be displayed in metric units (g, kg, ml, L).</div></div>
+    <div class="reg-item"><div class="reg-key">Barcode / GTIN</div><div class="reg-val">EAN-13 required for retail. Register with GS1 UK. Retailers will insist on this for listing.</div></div>
+  </div>
+  <div class="reg-card"><div class="reg-title"><span style="background:rgba(188,140,255,0.15);padding:6px 10px;border-radius:6px;font-size:0.8rem;">🏭</span> Food Business Registration & Safety</div>
+    <div class="reg-item"><div class="reg-key">Food Business Operator</div><div class="reg-val">If you import and sell food in the UK, you must register as a Food Business Operator with your local authority (free, done online).</div></div>
+    <div class="reg-item"><div class="reg-key">HACCP</div><div class="reg-val">Hazard Analysis Critical Control Points document required. Even a basic written HACCP plan is needed and major retailers will request it.</div></div>
+    <div class="reg-item"><div class="reg-key">Traceability</div><div class="reg-val">UK food law requires one-up/one-down traceability records — know your supplier and your buyer at minimum.</div></div>
+    <div class="reg-item"><div class="reg-key">Novel Foods</div><div class="reg-val">Some African superfoods require Novel Food authorisation in UK. Check baobab and moringa status with UK FSA Novel Foods register. Baobab is authorised; moringa has established use.</div></div>
+    <div class="reg-item"><div class="reg-key">Organic Claims</div><div class="reg-val">Must be certified by a UK-approved organic control body (Soil Association, OF&G etc). EU organic certificate alone not sufficient post-Brexit.</div></div>
+  </div>`;
+}
+
+// ===================== DIRECTORY =====================
+function renderDirectory(c){
+  c.innerHTML=`
+  <div class="section-header">
+    <div><div class="section-title">Trade Directory</div><div class="section-subtitle">Importers, exporters and brands — Africa & Caribbean to UK</div></div>
+    <button class="btn btn-ghost" onclick="openModal()"><i class="fa-solid fa-plus"></i> Add Contact</button>
+  </div>
+  <div class="filter-bar">
+    <div class="filter-search"><i class="fa-solid fa-search"></i><input id="dir-search" placeholder="Search company, product, location..." oninput="filterDirectory()"></div>
+    <select id="dir-type" onchange="filterDirectory()">
+      <option value="">All Types</option>
+      <option>Importer</option><option>Exporter</option><option>Retailer/Distributor</option><option>Importer/Distributor</option>
+    </select>
+    <select id="dir-status" onchange="filterDirectory()">
+      <option value="">All Status</option><option value="true">Verified</option><option value="false">Unverified</option>
+    </select>
+    <span class="filter-count" id="dir-count">${DIRECTORY_DATA.length} results</span>
+  </div>
+  <div class="card"><div class="table-wrap"><table>
+    <thead><tr><th>Company</th><th>Type</th><th>Location</th><th>Products</th><th>Contact</th><th>Status</th></tr></thead>
+    <tbody id="dir-tbody">${directoryRows(DIRECTORY_DATA)}</tbody>
+  </table></div></div>`;
+}
+function directoryRows(data){
+  if(!data.length) return `<tr><td colspan="6"><div class="empty"><i class="fa-solid fa-circle-xmark"></i><p>No results match your filters.</p></div></td></tr>`;
+  return data.map(d=>`<tr>
+    <td style="font-weight:600;">${d.name}</td>
+    <td><span class="badge ${d.type.includes('Exporter')?'badge-gold':d.type.includes('Retailer')?'badge-purple':'badge-blue'}">${d.type}</span></td>
+    <td style="color:var(--text2);">${d.location}</td>
+    <td style="color:var(--text2);max-width:200px;">${d.products}</td>
+    <td style="font-size:0.75rem;color:var(--blue);">${d.contact}</td>
+    <td><span class="badge ${d.verified?'badge-green':'badge-red'}">${d.verified?'Verified':'Unverified'}</span></td>
+  </tr>`).join('');
+}
+function filterDirectory(){
+  const q=(document.getElementById('dir-search')?.value||'').toLowerCase();
+  const type=(document.getElementById('dir-type')?.value||'').toLowerCase();
+  const status=document.getElementById('dir-status')?.value||'';
+  const filtered=DIRECTORY_DATA.filter(d=>(!q||(d.name+d.products+d.location).toLowerCase().includes(q))&&(!type||d.type.toLowerCase().includes(type))&&(status===''||String(d.verified)===status));
+  const tbody=document.getElementById('dir-tbody');
+  const count=document.getElementById('dir-count');
+  if(tbody) tbody.innerHTML=directoryRows(filtered);
+  if(count) count.textContent=filtered.length+' results';
+}
+
+// ===================== MATCHMAKING =====================
+const MATCHES=[
+  {icon:'🌾',bg:'rgba(61,214,140,0.1)',title:'Fonio Supplier → UK Health Retailer',desc:'West African fonio exporters matched with UK independent health food retailers and online stores. High margin, growing category.',score:94,products:['Fonio'],type:'Active'},
+  {icon:'🌿',bg:'rgba(188,140,255,0.1)',title:'Moringa Grower → Wellness Brand',desc:'Ghanaian/Senegalese moringa powder producers seeking UK wellness and supplement brands. Organic certified stock available.',score:88,products:['Moringa'],type:'Active'},
+  {icon:'🌺',bg:'rgba(88,166,255,0.1)',title:'Hibiscus Producer → Tea Brand',desc:'West African dried hibiscus flower suppliers seeking UK premium tea brands and D2C beverage companies.',score:82,products:['Hibiscus'],type:'Active'},
+  {icon:'🥭',bg:'rgba(232,168,56,0.1)',title:'Caribbean Produce → Supermarket',desc:'Jamaican and Trinidadian fresh produce suppliers seeking UK supermarket buyers. Must have GlobalGAP certification.',score:75,products:['Scotch Bonnet','Plantain','Ackee'],type:'Opportunity'},
+  {icon:'🌰',bg:'rgba(232,168,56,0.1)',title:'Baobab Supplier → D2C Health Brand',desc:'African baobab powder producers (Novel Food authorised) seeking UK D2C brands for subscription boxes.',score:79,products:['Baobab'],type:'Opportunity'},
+  {icon:'🛒',bg:'rgba(61,214,140,0.1)',title:'Multi-Product → Afro-Caribbean Retailer',desc:'Consolidated multi-product import operations supplying London, Birmingham and Manchester Afro-Caribbean grocery networks.',score:71,products:['Multiple'],type:'Open'},
+  {icon:'🫘',bg:'rgba(88,166,255,0.1)',title:'Cassava Flour Producer → Gluten-Free Brand',desc:'Ghanaian and Nigerian cassava flour exporters matched with UK gluten-free and Paleo food brands. Growing demand, good margin, clean label appeal.',score:86,products:['Cassava Flour'],type:'Active'},
+  {icon:'🥜',bg:'rgba(61,214,140,0.1)',title:'Tiger Nut Farmer → UK Health Snack Brand',desc:'Ghanaian tiger nut producers seeking UK health snack and nut-free product brands. Key for school-safe snack ranges.',score:81,products:['Tiger Nuts'],type:'Active'},
+  {icon:'🧴',bg:'rgba(188,140,255,0.1)',title:'Shea Butter Co-op → UK Natural Beauty Brand',desc:'Women\'s cooperatives in Burkina Faso and Ghana supplying unrefined shea butter to UK natural cosmetics brands. Ethical sourcing story is a key differentiator.',score:85,products:['Shea Butter'],type:'Active'},
+  {icon:'🫐',bg:'rgba(232,168,56,0.1)',title:'Soursop Supplier → UK Wellness D2C',desc:'Caribbean soursop pulp and dried leaf suppliers seeking UK wellness D2C brands for frozen smoothie packs and herbal teas.',score:73,products:['Soursop'],type:'Opportunity'},
+  {icon:'🥭',bg:'rgba(61,214,140,0.1)',title:'Dried Mango Producer → Premium Snack Brand',desc:'Sahel-region no-added-sugar dried mango producers seeking UK premium natural snack brands. Differentiated by West African origin and superior sweetness.',score:77,products:['Dried Mango'],type:'Opportunity'},
+  {icon:'🍽️',bg:'rgba(188,140,255,0.1)',title:'Egusi & Tamarind → Restaurant Suppliers',desc:'West African staple ingredient producers seeking UK restaurant and foodservice suppliers. Growing demand as West African cuisine goes mainstream.',score:68,products:['Egusi','Tamarind'],type:'Open'},
+];
+function renderMatchmaking(c){
+  c.innerHTML=`
+  <div class="section-header"><div><div class="section-title">Matchmaking</div><div class="section-subtitle">Producer–buyer connections and trade opportunities</div></div></div>
+  <div class="alert alert-gold"><i class="fa-solid fa-handshake-angle"></i><div>Matches are curated opportunities based on market data. Always conduct your own due diligence before entering commercial agreements.</div></div>
+  <div class="filter-bar">
+    <div class="filter-search"><i class="fa-solid fa-search"></i><input id="match-search" placeholder="Search matches..." oninput="filterMatches()"></div>
+    <select id="match-type" onchange="filterMatches()"><option value="">All Types</option><option>Active</option><option>Opportunity</option><option>Open</option></select>
+    <select id="match-product" onchange="filterMatches()">
+      <option value="">All Products</option>
+      ${[...new Set(MATCHES.flatMap(m=>m.products))].map(p=>`<option>${p}</option>`).join('')}
+    </select>
+    <span class="filter-count" id="match-count">${MATCHES.length} matches</span>
+  </div>
+  <div id="match-list" style="display:flex;flex-direction:column;gap:12px;">${matchCards(MATCHES)}</div>`;
+}
+function matchCards(data){
+  if(!data.length) return `<div class="card"><div class="empty"><i class="fa-solid fa-circle-xmark"></i><p>No matches found.</p></div></div>`;
+  return data.map(m=>`<div class="match-card"><div class="match-icon" style="background:${m.bg};font-size:1.4rem;">${m.icon}</div><div class="match-content"><div class="match-title">${m.title}</div><div class="match-desc">${m.desc}</div><div class="match-footer"><div style="display:flex;gap:8px;flex-wrap:wrap;">${m.products.map(p=>`<span class="badge badge-gold">${p}</span>`).join('')}<span class="badge ${m.type==='Active'?'badge-green':m.type==='Opportunity'?'badge-blue':'badge-purple'}">${m.type}</span></div><div style="font-size:0.8rem;color:var(--green);font-weight:600;">Match Score: ${m.score}%</div></div></div></div>`).join('');
+}
+function filterMatches(){
+  const q=(document.getElementById('match-search')?.value||'').toLowerCase();
+  const type=document.getElementById('match-type')?.value||'';
+  const product=document.getElementById('match-product')?.value||'';
+  const filtered=MATCHES.filter(m=>(!q||(m.title+m.desc).toLowerCase().includes(q))&&(!type||m.type===type)&&(!product||m.products.includes(product)));
+  const list=document.getElementById('match-list');
+  const count=document.getElementById('match-count');
+  if(list) list.innerHTML=matchCards(filtered);
+  if(count) count.textContent=filtered.length+' matches';
+}
+
+// ===================== PRODUCE =====================
+function renderProduce(c){
+  const cats=[...new Set(PRODUCE_DATA.map(p=>p.category))];
+  c.innerHTML=`
+  <div class="section-header"><div><div class="section-title">Local Produce Database</div><div class="section-subtitle">African & Caribbean produce with UK import intelligence</div></div></div>
+  <div class="filter-bar">
+    <div class="filter-search"><i class="fa-solid fa-search"></i><input id="prod-search" placeholder="Search by name, origin, notes..." oninput="filterProduce()"></div>
+    <select id="prod-cat" onchange="filterProduce()"><option value="">All Categories</option>${cats.map(cat=>`<option>${cat}</option>`).join('')}</select>
+    <select id="prod-margin" onchange="filterProduce()"><option value="">All Margins</option><option>High</option><option>Medium-High</option><option>Medium</option></select>
+    <select id="prod-trend" onchange="filterProduce()"><option value="">All Trends</option><option value="up">↑ Trending Up</option><option value="stable">→ Stable</option></select>
+    <span class="filter-count" id="prod-count">${PRODUCE_DATA.length} produce</span>
+  </div>
+  <div id="produce-grid" class="produce-grid">${produceCards(PRODUCE_DATA)}</div>`;
+}
+function produceCards(data){
+  if(!data.length) return `<div class="card" style="grid-column:1/-1"><div class="empty"><i class="fa-solid fa-circle-xmark"></i><p>No produce matches your filters.</p></div></div>`;
+  return data.map(p=>`<div class="produce-card">
+    <div class="produce-card-header"><div><div class="produce-name">${p.name}</div><div class="produce-origin">${p.origin}</div></div>
+    <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;"><span class="badge ${p.margin==='High'?'badge-green':p.margin==='Medium-High'?'badge-gold':'badge-blue'}">${p.margin} Margin</span><span style="font-size:0.7rem;color:${p.trend==='up'?'var(--green)':'var(--text3)'};">${p.trend==='up'?'↑ Trending':'→ Stable'}</span></div></div>
+    <div class="produce-card-body">
+      <div class="produce-detail"><span class="produce-detail-label">Category</span><span class="produce-detail-value">${p.category}</span></div>
+      <div class="produce-detail"><span class="produce-detail-label">HS Code</span><span class="produce-detail-value" style="font-size:0.72rem;">${p.hsCodes[0]}</span></div>
+      <div class="produce-detail"><span class="produce-detail-label">UK Duty</span><span class="produce-detail-value" style="color:var(--green);">${p.ukDuty}</span></div>
+      <div class="produce-detail"><span class="produce-detail-label">FOB Price</span><span class="produce-detail-value">${p.avgFOB.split(',')[0]}</span></div>
+      <div class="produce-detail"><span class="produce-detail-label">UK Retail</span><span class="produce-detail-value" style="color:var(--gold);">${p.ukRetailPrice}</span></div>
+      <div class="produce-detail"><span class="produce-detail-label">Seasons</span><span class="produce-detail-value" style="font-size:0.72rem;">${p.seasons.split('(')[0].trim()}</span></div>
+      <div class="produce-detail"><span class="produce-detail-label">GI Index</span><span class="produce-detail-value">${p.gi ? `<span class="gi-badge ${p.gi<55?'gi-low':p.gi<70?'gi-medium':'gi-high'}">${p.gi} ${p.giLabel}</span>` : `<span style="color:var(--text3);font-size:0.72rem;">${p.giLabel||'—'}</span>`}</span></div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:0.75rem;color:var(--text2);line-height:1.5;">${p.notes}</div>
+      <button class="btn btn-green" style="width:100%;margin-top:10px;justify-content:center;font-size:0.78rem;" onclick="loadIntoCalc('${p.name}')"><i class="fa-solid fa-calculator"></i> Calculate in Margin Calculator</button>
+    </div>
+  </div>`).join('');
+}
+function filterProduce(){
+  const q=(document.getElementById('prod-search')?.value||'').toLowerCase();
+  const cat=document.getElementById('prod-cat')?.value||'';
+  const margin=document.getElementById('prod-margin')?.value||'';
+  const trend=document.getElementById('prod-trend')?.value||'';
+  const filtered=PRODUCE_DATA.filter(p=>(!q||(p.name+p.origin+p.notes+p.category).toLowerCase().includes(q))&&(!cat||p.category===cat)&&(!margin||p.margin===margin)&&(!trend||p.trend===trend));
+  const grid=document.getElementById('produce-grid');
+  const count=document.getElementById('prod-count');
+  if(grid) grid.innerHTML=produceCards(filtered);
+  if(count) count.textContent=filtered.length+' produce';
+}
+
+// ===================== LOGISTICS =====================
+function renderLogistics(c){
+  c.innerHTML=`
+  <div class="section-header"><div><div class="section-title">Logistics & Trade Hubs</div><div class="section-subtitle">Key shipping routes from Africa & Caribbean to UK</div></div></div>
+  <div class="alert alert-gold"><i class="fa-solid fa-triangle-exclamation"></i><div>Costs and transit times are indicative. Get quotes from freight forwarders (Flexport, Kuehne+Nagel) for live rates. Always factor in port handling and customs clearance fees (£200–£600 typically).</div></div>
+  <div class="filter-bar">
+    <div class="filter-search"><i class="fa-solid fa-search"></i><input id="log-search" placeholder="Search by origin, destination..." oninput="filterLogistics()"></div>
+    <select id="log-mode" onchange="filterLogistics()"><option value="">All Modes</option><option>Sea</option><option>Air</option></select>
+    <span class="filter-count" id="log-count">${ROUTES.length} routes</span>
+  </div>
+  <div id="routes-list" style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">${routeCards(ROUTES)}</div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Key UK Entry Ports</div>
+      ${[{port:'Felixstowe',info:"UK's largest container port. Main entry for West African goods."},
+         {port:'Tilbury (London)',info:'Close to London distribution. Good for Caribbean routes.'},
+         {port:'Southampton',info:'Strong for Caribbean/Americas routes. Less congested.'},
+         {port:'Liverpool',info:'Good for West Africa if distributing to North/Midlands.'},
+      ].map(p=>`<div style="padding:9px 0;border-bottom:1px solid var(--border);font-size:0.82rem;"><strong>${p.port}</strong><div style="color:var(--text2);margin-top:2px;">${p.info}</div></div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="card-title">Import Documentation Checklist</div>
+      ${['Commercial Invoice (value, quantity, HS code)','Packing List','Bill of Lading or Airway Bill','Certificate of Origin (for DCTS preferential rate)','Phytosanitary Certificate (NPPO-issued)','IPAFFS Pre-notification (APHA)','Import Entry / Customs Declaration (C88)','Health Certificate if applicable (FSA/APHA)'].map(i=>`<div style="display:flex;gap:8px;padding:7px 0;border-bottom:1px solid rgba(42,52,65,0.4);font-size:0.8rem;"><i class="fa-regular fa-square-check" style="color:var(--green);margin-top:1px;flex-shrink:0;"></i><span>${i}</span></div>`).join('')}
+    </div>
+  </div>`;
+}
+function routeCards(data){
+  if(!data.length) return `<div class="card"><div class="empty"><i class="fa-solid fa-circle-xmark"></i><p>No routes match.</p></div></div>`;
+  return data.map(r=>`<div class="route-card"><div class="route-path">${r.from} <span class="route-arrow">→</span> ${r.to} <span class="badge badge-blue" style="margin-left:4px;">${r.mode}</span></div><div style="display:flex;gap:24px;font-size:0.8rem;margin-bottom:8px;"><div><span style="color:var(--text2);">Transit: </span><span>${r.transit}</span></div><div><span style="color:var(--text2);">Est. Cost: </span><span style="color:var(--gold);">${r.cost}</span></div></div><div style="font-size:0.78rem;color:var(--text2);">${r.notes}</div></div>`).join('');
+}
+function filterLogistics(){
+  const q=(document.getElementById('log-search')?.value||'').toLowerCase();
+  const mode=(document.getElementById('log-mode')?.value||'').toLowerCase();
+  const filtered=ROUTES.filter(r=>(!q||(r.from+r.to+r.notes+r.mode).toLowerCase().includes(q))&&(!mode||r.mode.toLowerCase().includes(mode)));
+  const list=document.getElementById('routes-list');
+  const count=document.getElementById('log-count');
+  if(list) list.innerHTML=routeCards(filtered);
+  if(count) count.textContent=filtered.length+' routes';
+}
+
+// ===================== NICHE MARKETS =====================
+function renderNiche(c){
+  c.innerHTML=`
+  <div class="section-header"><div><div class="section-title">Niche Market Intelligence</div><div class="section-subtitle">UK market opportunities for African & Caribbean produce</div></div></div>
+  <div class="filter-bar">
+    <div class="filter-search"><i class="fa-solid fa-search"></i><input id="niche-search" placeholder="Search markets, products..." oninput="filterNiche()"></div>
+    <select id="niche-maturity" onchange="filterNiche()"><option value="">All Stages</option><option>Emerging</option><option>Growing</option><option>Established</option></select>
+    <select id="niche-margin" onchange="filterNiche()"><option value="">All Margins</option><option>High</option><option>Medium</option></select>
+    <span class="filter-count" id="niche-count">${NICHE_DATA.length} markets</span>
+  </div>
+  <div id="niche-grid" class="produce-grid">${nicheCards(NICHE_DATA)}</div>`;
+}
+function nicheCards(data){
+  if(!data.length) return `<div class="card" style="grid-column:1/-1"><div class="empty"><i class="fa-solid fa-circle-xmark"></i><p>No markets match.</p></div></div>`;
+  return data.map(n=>`<div class="niche-card"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;"><div class="niche-title">${n.market}</div><span class="badge ${n.maturity==='Emerging'?'badge-gold':n.maturity==='Growing'?'badge-green':'badge-blue'}">${n.maturity}</span></div><div class="niche-opportunity">${n.opportunity}</div><div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;">${n.products.map(p=>`<span class="badge badge-purple" style="cursor:pointer;" onclick="filterProduceByName('${p}')">${p}</span>`).join('')}</div><div style="display:flex;justify-content:space-between;align-items:center;font-size:0.78rem;"><span style="color:var(--text2);">Margin Potential</span><span class="badge ${n.margin==='High'?'badge-green':'badge-gold'}">${n.margin}</span></div></div>`).join('');
+}
+function filterNiche(){
+  const q=(document.getElementById('niche-search')?.value||'').toLowerCase();
+  const maturity=document.getElementById('niche-maturity')?.value||'';
+  const margin=document.getElementById('niche-margin')?.value||'';
+  const filtered=NICHE_DATA.filter(n=>(!q||(n.market+n.opportunity+n.products.join(' ')).toLowerCase().includes(q))&&(!maturity||n.maturity===maturity)&&(!margin||n.margin===margin));
+  const grid=document.getElementById('niche-grid');
+  const count=document.getElementById('niche-count');
+  if(grid) grid.innerHTML=nicheCards(filtered);
+  if(count) count.textContent=filtered.length+' markets';
+}
+function filterProduceByName(name){
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.view==='produce'));
+  document.getElementById('breadcrumb-current').textContent='Local Produce';
+  currentView='produce';
+  renderView('produce');
+  setTimeout(()=>{const s=document.getElementById('prod-search');if(s){s.value=name;filterProduce();}},50);
+}
+
+// ===================== CALCULATOR =====================
+function renderCalculator(c){
+  c.innerHTML=`
+  <div class="section-header"><div><div class="section-title">Landed Cost & Margin Calculator</div><div class="section-subtitle">Type a product name to auto-fill benchmark values from the database</div></div></div>
+  <div class="grid-2">
+    <div>
+      <div class="calc-section">
+        <div class="calc-section-title">📦 Product & Purchase Cost</div>
+        <div class="form-group"><label>Product Name — type to auto-fill</label>
+          <div class="autocomplete-wrap">
+            <input id="c-product" placeholder="e.g. Fonio, Moringa, Hibiscus..." autocomplete="off" oninput="calcProductSearch()" onkeydown="if(event.key==='Escape')document.getElementById('c-product-dropdown').style.display='none'">
+            <div class="autocomplete-dropdown" id="c-product-dropdown"></div>
+          </div>
+        </div>
+        <div id="calc-autofill-hint" style="font-size:0.75rem;color:var(--green);margin:-6px 0 10px;display:none;"><i class="fa-solid fa-circle-check" style="margin-right:4px;"></i>Benchmark values loaded — adjust as needed</div>
+        <div class="grid-2">
+          <div class="form-group"><label>FOB Price (£/kg)</label><input id="c-fob" type="number" value="1.50" step="0.01" oninput="calcUpdate()"></div>
+          <div class="form-group"><label>Order Quantity (kg)</label><input id="c-qty" type="number" value="500" step="50" oninput="calcUpdate()"></div>
+        </div>
+      </div>
+      <div class="calc-section">
+        <div class="calc-section-title">🚢 Freight & Insurance</div>
+        <div class="grid-2">
+          <div class="form-group"><label>Sea Freight (£ total)</label><input id="c-freight" type="number" value="800" oninput="calcUpdate()"></div>
+          <div class="form-group"><label>Insurance (£ total)</label><input id="c-insurance" type="number" value="60" oninput="calcUpdate()"></div>
+        </div>
+        <div class="form-group"><label>Port Handling & Customs Clearance (£)</label><input id="c-port" type="number" value="350" oninput="calcUpdate()"></div>
+      </div>
+      <div class="calc-section">
+        <div class="calc-section-title">🏛️ Duties & Tax</div>
+        <div class="grid-2">
+          <div class="form-group"><label>UK Import Duty (%)</label><input id="c-duty" type="number" value="0" step="0.5" oninput="calcUpdate()"></div>
+          <div class="form-group"><label>Import VAT (%)</label><input id="c-vat" type="number" value="20" step="0.5" oninput="calcUpdate()"></div>
+        </div>
+        <div style="font-size:0.75rem;color:var(--text3);">Import VAT is reclaimable if you are VAT registered. Set to 0 if VAT registered for margin purposes.</div>
+      </div>
+      <div class="calc-section">
+        <div class="calc-section-title">🏭 Processing & Packaging</div>
+        <div class="grid-2">
+          <div class="form-group"><label>Packaging / Relabelling (£)</label><input id="c-pack" type="number" value="200" oninput="calcUpdate()"></div>
+          <div class="form-group"><label>Storage / Warehousing (£)</label><input id="c-storage" type="number" value="100" oninput="calcUpdate()"></div>
+        </div>
+      </div>
+      <div class="calc-section">
+        <div class="calc-section-title">💰 Selling Price</div>
+        <div class="grid-2">
+          <div class="form-group"><label>Wholesale Price (£/kg)</label><input id="c-wholesale" type="number" value="5.00" step="0.10" oninput="calcUpdate()"></div>
+          <div class="form-group"><label>D2C Retail Price (£/kg)</label><input id="c-retail" type="number" value="8.00" step="0.10" oninput="calcUpdate()"></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="calc-result">
+        <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:14px;" id="calc-title">Results</div>
+        <div id="calc-output">Enter values to see results</div>
+      </div>
+      <div class="card" style="margin-top:16px;">
+        <div class="card-title" id="calc-bench-title">💡 Select a Product</div>
+        <div id="calc-bench-body" style="font-size:0.8rem;color:var(--text2);line-height:1.6;">Type a product name above to auto-load benchmark data.</div>
+      </div>
+    </div>
+  </div>`;
+  calcUpdate();
+}
+
+function calcProductSearch(){
+  const q=(document.getElementById('c-product')?.value||'').toLowerCase().trim();
+  const dd=document.getElementById('c-product-dropdown');
+  if(!dd) return;
+  if(q.length<1){dd.style.display='none';return;}
+  const matches=PRODUCE_DATA.filter(p=>p.name.toLowerCase().includes(q)||p.category.toLowerCase().includes(q));
+  if(!matches.length){dd.style.display='none';return;}
+  dd.innerHTML=matches.map(p=>`<div class="autocomplete-item" onclick="loadIntoCalc('${p.name}')"><span>${p.name} <span style="color:var(--text3);font-size:0.72rem;">— ${p.category}</span></span><span style="font-size:0.7rem;color:var(--text3);">${p.avgFOB.split('–')[0].trim()}/kg</span></div>`).join('');
+  dd.style.display='block';
+}
+
+function loadIntoCalc(name){
+  const p=PRODUCE_DATA.find(p=>p.name===name);
+  if(!p) return;
+  if(currentView!=='calculator'){
+    document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.view==='calculator'));
+    document.getElementById('breadcrumb-current').textContent='Margin Calculator';
+    currentView='calculator';
+    renderView('calculator');
+    setTimeout(()=>loadIntoCalc(name),120);
+    return;
+  }
+  const fobMatch=p.avgFOB.replace(/[£,]/g,'').match(/[\d.]+/);
+  const fob=fobMatch?parseFloat(fobMatch[0]):1.5;
+  const retMatch=p.ukRetailPrice.replace(/[£,]/g,'').match(/[\d.]+/);
+  const retail=retMatch?parseFloat(retMatch[0]):5;
+  const dutyMatch=p.ukDuty.match(/[\d.]+/);
+  const duty=dutyMatch?parseFloat(dutyMatch[0]):0;
+  const el=id=>document.getElementById(id);
+  if(el('c-product')) el('c-product').value=p.name;
+  if(el('c-product-dropdown')) el('c-product-dropdown').style.display='none';
+  if(el('c-fob')) el('c-fob').value=fob.toFixed(2);
+  if(el('c-duty')) el('c-duty').value=duty.toFixed(1);
+  if(el('c-retail')) el('c-retail').value=retail.toFixed(2);
+  if(el('c-wholesale')) el('c-wholesale').value=(retail*0.6).toFixed(2);
+  const hint=el('calc-autofill-hint');if(hint) hint.style.display='block';
+  const bt=el('calc-bench-title');if(bt) bt.textContent='💡 '+p.name+' UK Benchmark';
+  const title=el('calc-title');if(title) title.textContent='Results: '+p.name;
+  const bb=el('calc-bench-body');
+  if(bb) bb.innerHTML=`<div style="padding:3px 0;"><strong style="color:var(--text);">FOB Range:</strong> ${p.avgFOB}</div><div style="padding:3px 0;"><strong style="color:var(--text);">UK Retail:</strong> ${p.ukRetailPrice}</div><div style="padding:3px 0;"><strong style="color:var(--text);">Import Duty:</strong> ${p.ukDuty}</div><div style="padding:3px 0;"><strong style="color:var(--text);">HS Code:</strong> ${p.hsCodes[0]}</div><div style="padding:3px 0;"><strong style="color:var(--text);">Seasons:</strong> ${p.seasons}</div><div style="margin-top:8px;padding:8px;background:rgba(232,168,56,0.08);border-radius:6px;font-size:0.75rem;">${p.notes}</div>`;
+  calcUpdate();
+}
+
+function calcUpdate(){
+  const fob=parseFloat(document.getElementById('c-fob')?.value)||0;
+  const qty=parseFloat(document.getElementById('c-qty')?.value)||0;
+  const freight=parseFloat(document.getElementById('c-freight')?.value)||0;
+  const insurance=parseFloat(document.getElementById('c-insurance')?.value)||0;
+  const port=parseFloat(document.getElementById('c-port')?.value)||0;
+  const duty=parseFloat(document.getElementById('c-duty')?.value)||0;
+  const vat=parseFloat(document.getElementById('c-vat')?.value)||0;
+  const pack=parseFloat(document.getElementById('c-pack')?.value)||0;
+  const storage=parseFloat(document.getElementById('c-storage')?.value)||0;
+  const wholesale=parseFloat(document.getElementById('c-wholesale')?.value)||0;
+  const retail=parseFloat(document.getElementById('c-retail')?.value)||0;
+  const fobTotal=fob*qty;
+  const cif=fobTotal+freight+insurance;
+  const dutyAmt=cif*(duty/100);
+  const vatAmt=(cif+dutyAmt)*(vat/100);
+  const landed=cif+dutyAmt+vatAmt+port+pack+storage;
+  const landedKg=qty>0?landed/qty:0;
+  const wsRev=wholesale*qty;const wsProfit=wsRev-landed;const wsMgn=wsRev>0?wsProfit/wsRev*100:0;
+  const d2cRev=retail*qty;const d2cProfit=d2cRev-landed;const d2cMgn=d2cRev>0?d2cProfit/d2cRev*100:0;
+  const fmt=n=>'£'+n.toFixed(2);const fmtk=n=>'£'+n.toFixed(0);
+  const out=document.getElementById('calc-output');
+  if(!out) return;
+  out.innerHTML=`
+    <div class="calc-row"><span class="label">FOB Value (${qty}kg)</span><span>${fmt(fobTotal)}</span></div>
+    <div class="calc-row"><span class="label">Freight</span><span>${fmt(freight)}</span></div>
+    <div class="calc-row"><span class="label">Insurance</span><span>${fmt(insurance)}</span></div>
+    <div class="calc-row"><span class="label">CIF Value</span><span style="color:var(--text);font-weight:600;">${fmt(cif)}</span></div>
+    <div class="calc-row"><span class="label">Import Duty (${duty}%)</span><span>${fmt(dutyAmt)}</span></div>
+    <div class="calc-row"><span class="label">Import VAT (${vat}%)</span><span style="color:var(--text3);">${fmt(vatAmt)} *reclaimable</span></div>
+    <div class="calc-row"><span class="label">Port & Customs</span><span>${fmt(port)}</span></div>
+    <div class="calc-row"><span class="label">Packaging & Relabelling</span><span>${fmt(pack)}</span></div>
+    <div class="calc-row"><span class="label">Storage</span><span>${fmt(storage)}</span></div>
+    <div class="calc-total"><span>Total Landed Cost</span><span>${fmtk(landed)}</span></div>
+    <div class="calc-row" style="margin-top:4px;"><span class="label">Landed per kg</span><span style="color:var(--gold);font-weight:600;">${fmt(landedKg)}</span></div>
+    <div class="calc-highlight"><span>Wholesale (${fmt(wholesale)}/kg)</span><span style="color:${wsMgn>30?'var(--green)':'var(--gold)'};">${fmtk(wsProfit)} | ${wsMgn.toFixed(1)}% margin</span></div>
+    <div class="calc-highlight"><span>D2C Retail (${fmt(retail)}/kg)</span><span style="color:${d2cMgn>40?'var(--green)':'var(--gold)'};">${fmtk(d2cProfit)} | ${d2cMgn.toFixed(1)}% margin</span></div>`;
+}
+
+// ===================== MY PRODUCERS =====================
+function renderMyProducers(c){
+  c.innerHTML=`
+  <div class="section-header">
+    <div><div class="section-title">My Producer Leads</div><div class="section-subtitle">Saved locally — ${producers.length} lead${producers.length!==1?'s':''}</div></div>
+    <button class="btn btn-primary" onclick="openModal()"><i class="fa-solid fa-plus"></i> Add Lead</button>
+  </div>
+  ${producers.length===0?`<div class="card"><div class="empty"><i class="fa-solid fa-inbox"></i><p>No producer leads saved yet.<br>Click "Add Lead" to save your first contact.</p></div></div>`:`
+  <div class="filter-bar">
+    <div class="filter-search"><i class="fa-solid fa-search"></i><input id="lead-search" placeholder="Search leads..." oninput="filterLeads()"></div>
+    <select id="lead-margin" onchange="filterLeads()"><option value="">All Margins</option><option>High</option><option>Medium</option><option>Low</option></select>
+    <span class="filter-count" id="lead-count">${producers.length} leads</span>
+  </div>
+  <div class="card"><div class="table-wrap"><table>
+    <thead><tr><th>Producer</th><th>Location</th><th>Product</th><th>Volume</th><th>Margin</th><th>Target Market</th><th>Notes</th><th></th></tr></thead>
+    <tbody id="lead-tbody">${leadRows(producers)}</tbody>
+  </table></div></div>`}`;
+}
+function leadRows(data){
+  if(!data.length) return `<tr><td colspan="8"><div class="empty"><i class="fa-solid fa-circle-xmark"></i><p>No leads match.</p></div></td></tr>`;
+  return data.map((p,i)=>`<tr>
+    <td style="font-weight:600;">${p.name}</td>
+    <td style="color:var(--text2);">${p.country}${p.location?', '+p.location:''}</td>
+    <td>${p.product||'—'}</td>
+    <td style="color:var(--text2);">${p.volume||'—'}</td>
+    <td><span class="badge ${p.margin==='High'?'badge-green':p.margin==='Medium'?'badge-gold':'badge-blue'}">${p.margin}</span></td>
+    <td style="color:var(--text2);">${p.buyer||'—'}</td>
+    <td style="color:var(--text2);font-size:0.75rem;">${p.notes||'—'}</td>
+    <td><button class="btn btn-ghost" style="padding:4px 10px;font-size:0.75rem;" onclick="deleteProducer(${i})"><i class="fa-solid fa-trash"></i></button></td>
+  </tr>`).join('');
+}
+function filterLeads(){
+  const q=(document.getElementById('lead-search')?.value||'').toLowerCase();
+  const margin=document.getElementById('lead-margin')?.value||'';
+  const filtered=producers.filter(p=>(!q||(p.name+p.product+p.country+(p.notes||'')).toLowerCase().includes(q))&&(!margin||p.margin===margin));
+  const tbody=document.getElementById('lead-tbody');
+  const count=document.getElementById('lead-count');
+  if(tbody) tbody.innerHTML=leadRows(filtered);
+  if(count) count.textContent=filtered.length+' leads';
+}
+
+// ===================== REGION DATA =====================
+const REGION_DATA = {
+  'west-africa': {
+    name: 'West Africa',
+    flag: '🌍',
+    tagline: 'The source — grains, superfoods, botanicals and oils',
+    color: 'var(--gold)',
+    stats: [
+      {rv:'8', rl:'Key Countries'},
+      {rv:'10+', rl:'Produce Lines'},
+      {rv:'0%', rl:'Duty (Most DCTS)'},
+      {rv:'High', rl:'Avg Margin'},
+    ],
+    overview: 'West Africa is the primary source region for most of the platform\'s high-value produce — fonio, moringa, shea butter, baobab, hibiscus, egusi and tiger nuts all originate here. The DCTS scheme means almost all goods enter the UK duty-free. The region has improving logistics via Dakar and Accra ports.',
+    tradeContext: 'Most West African countries qualify for the UK\'s Developing Countries Trading Scheme (DCTS) Enhanced Preferences — meaning 0% duty on agricultural goods. UK-West Africa trade is growing but underdeveloped relative to EU-West Africa flows. Significant opportunity for early movers.',
+    keyAgreements: ['UK DCTS (Developing Countries Trading Scheme)', 'UK-West Africa Partnership (ECOWAS framework)', 'Individual bilateral investment treaties'],
+    countries: [
+      {flag:'🇸🇳', name:'Senegal', detail:'Fonio, Moringa, Hibiscus — Dakar is the main export hub. Strong logistics infrastructure.'},
+      {flag:'🇬🇭', name:'Ghana', detail:'Shea butter, Moringa, Plantain, Tiger Nuts, Cassava Flour. Strong food processing sector.'},
+      {flag:'🇳🇬', name:'Nigeria', detail:'Egusi, Scotch Bonnet, Plantain, Cassava Flour. Largest West African economy. Busy Lagos port.'},
+      {flag:'🇲🇱', name:'Mali', detail:'Fonio (primary origin), Dried Mango, Baobab. Landlocked — export via Dakar.'},
+      {flag:'🇬🇳', name:'Guinea', detail:'Fonio heartland — highest quality fonio grain. Conakry port. Less developed logistics.'},
+      {flag:'🇧🇫', name:'Burkina Faso', detail:'Shea butter, Dried Mango, Baobab. Landlocked — via Dakar or Abidjan.'},
+      {flag:'🇸🇱', name:'Sierra Leone', detail:'Cocoa, Egusi, Cassava. Emerging export sector with UK government support.'},
+      {flag:'🇨🇮', name:"Côte d'Ivoire", detail:'Cocoa, Coffee, Cashew. Key transit hub for landlocked Sahel countries.'},
+    ],
+    products: ['Fonio','Moringa','Hibiscus (Dried)','Baobab Powder','Shea Butter','Tiger Nuts','Egusi Seeds','Dried Mango (West African)','Tamarind','Cassava Flour','Plantain'],
+    logistics: 'Main ports: Dakar (Senegal), Tema (Ghana), Lagos (Nigeria), Abidjan (Côte d\'Ivoire). Regular services from Maersk, MSC, CMA CGM and Hapag-Lloyd. Transit to UK: 14–25 days sea. Landlocked Mali and Burkina Faso add 3–7 days via road to port.',
+    challenges: 'Phytosanitary documentation quality varies by country. Most current packaging is for EU/French market — UK relabelling commonly needed. Cold chain infrastructure limited outside major hubs.',
+  },
+  'east-africa': {
+    name: 'East Africa',
+    flag: '🌏',
+    tagline: 'Coffee, spices, teff and growing specialty food exports',
+    color: 'var(--green)',
+    stats: [
+      {rv:'6', rl:'Key Countries'},
+      {rv:'8+', rl:'Produce Lines'},
+      {rv:'0%', rl:'Duty (Most DCTS)'},
+      {rv:'High', rl:'Specialty Margin'},
+    ],
+    overview: 'East Africa is an emerging source region for the UK specialty food market — most recognised for Ethiopian and Kenyan coffee, but increasingly important for teff (Ethiopia), vanilla (Uganda/Madagascar), spices (Zanzibar), moringa (Kenya/Tanzania) and specialty horticulture. UK-East Africa trade has grown significantly since UK-EAC trade continuity arrangements post-Brexit.',
+    tradeContext: 'East African Community (EAC) countries benefit from UK-EAC Economic Partnership Agreement providing duty-free access. Ethiopia benefits from DCTS Enhanced Preferences. Kenya is a mature UK trade partner particularly for fresh horticulture. The region\'s specialty coffee sector is the most developed export-to-UK pipeline.',
+    keyAgreements: ['UK-EAC Economic Partnership Agreement (Kenya, Rwanda, Uganda, Tanzania)', 'UK DCTS Enhanced Preferences (Ethiopia, Uganda, Tanzania)', 'UK-Kenya Interim Trade Agreement'],
+    countries: [
+      {flag:'🇪🇹', name:'Ethiopia', detail:'Teff grain (primary world source), Specialty coffee, Moringa, Gesho. DCTS beneficiary.'},
+      {flag:'🇰🇪', name:'Kenya', detail:'Fresh horticulture, Specialty coffee, Macadamia, Moringa. Mature UK trade partner with direct flights.'},
+      {flag:'🇺🇬', name:'Uganda', detail:'Vanilla, Specialty coffee, Moringa, Baobab. Growing export capacity. UK-EAC EPA beneficiary.'},
+      {flag:'🇹🇿', name:'Tanzania', detail:'Spices (Zanzibar), Coffee, Sesame, Moringa. Dar es Salaam is main export port.'},
+      {flag:'🇷🇼', name:'Rwanda', detail:'Specialty coffee (premium, specialty grade), Pyrethrum. UK-EAC EPA. Strong quality certification culture.'},
+      {flag:'🇲🇬', name:'Madagascar', detail:'Vanilla (world\'s largest producer), Cloves, Pepper, Ylang-ylang. Separate from EAC — DCTS Enhanced.'},
+    ],
+    products: ['Teff (Grain & Flour)','Ethiopian Coffee','Kenyan Coffee','Rwandan Coffee','Vanilla (Uganda/Madagascar)','Moringa (Kenya)','Sesame Seeds','Zanzibar Spices','Macadamia','Baobab (Tanzania)'],
+    logistics: 'Main ports: Mombasa (Kenya), Dar es Salaam (Tanzania), Djibouti (Ethiopia/landlocked). Nairobi has excellent air freight connections to Heathrow (Kenya Airways, Ethiopian Airlines, British Airways cargo). Sea transit to UK: 18–28 days. Air freight 1–2 days — viable for specialty coffee and high-value perishables.',
+    challenges: 'Landlocked countries (Ethiopia, Uganda, Rwanda) add road transit time. Specialty coffee supply chains are complex — work with established exporters. Teff is underexplored — UK supply chains are thin but demand from Ethiopian diaspora and free-from market is strong.',
+  },
+  'caribbean': {
+    name: 'Caribbean',
+    flag: '🌴',
+    tagline: 'Established UK diaspora demand and growing mainstream crossover',
+    color: 'var(--purple)',
+    stats: [
+      {rv:'6', rl:'Key Countries'},
+      {rv:'8+', rl:'Produce Lines'},
+      {rv:'0–6.4%', rl:'Duty Range'},
+      {rv:'Med–High', rl:'Avg Margin'},
+    ],
+    overview: 'The Caribbean has deep, established trade ties with the UK through the large British-Caribbean diaspora community in London, Birmingham, Manchester and Bristol. Ackee, scotch bonnet, plantain, soursop and callaloo are staple grocery products. The growing trend is crossover into mainstream UK retail — Caribbean flavours are entering supermarkets and restaurant menus at pace.',
+    tradeContext: 'UK-CARIFORUM Economic Partnership Agreement provides preferential access for most Caribbean food exports. Jamaica and Trinidad are primary UK sources. Post-Brexit, the UK rolled over the EU-CARIFORUM EPA terms. Fresh produce must meet phytosanitary requirements. Canned goods (ackee especially) have specific regulatory pathways.',
+    keyAgreements: ['UK-CARIFORUM EPA (Jamaica, Trinidad, Barbados, Guyana, Belize and others)', 'UK-CARIFORUM Goods preferences — most food products 0% or reduced duty', 'Certificate of Origin (EUR.1) required to claim preference'],
+    countries: [
+      {flag:'🇯🇲', name:'Jamaica', detail:'Ackee, Scotch Bonnet, Plantain, Soursop, Callaloo, Thyme. Largest Caribbean UK trade partner.'},
+      {flag:'🇹🇹', name:'Trinidad & Tobago', detail:'Scotch Bonnet, Plantain, Soursop, Shadow Beni (Chadon Beni). Strong UK-TT trade route.'},
+      {flag:'🇧🇧', name:'Barbados', detail:'Hot sauces, Seasoning, Flying fish (niche). UK CARIFORUM EPA benefits.'},
+      {flag:'🇬🇾', name:'Guyana', detail:'Cassava, Plantain, Soursop. Growing UK export capacity — CARIFORUM EPA.'},
+      {flag:'🇬🇩', name:'Grenada', detail:'Nutmeg (major world producer), Mace, Cocoa. Premium spice origin story.'},
+      {flag:'🇩🇲', name:'Dominica', detail:'Specialty cocoa, Tropical fruits. Small volume, premium positioning.'},
+    ],
+    products: ['Ackee','Scotch Bonnet','Plantain','Soursop (Dried/Frozen)','Callaloo','Cassava (fresh)','Tamarind','Hot Sauce (processed)','Nutmeg & Mace','Coconut Products'],
+    logistics: 'Main ports: Kingston (Jamaica), Port of Spain (Trinidad). CMA CGM and Hapag-Lloyd serve UK routes. Transit to Tilbury/Southampton: 12–18 days. Fresh produce requires reefer containers — cold chain from farm to port is critical. Air freight from Kingston to Heathrow is available for premium/perishable lines.',
+    challenges: 'Ackee has specific health certification requirements — unripe fruit is toxic (hypoglycin A). GlobalGAP is required for fresh produce entering major UK supermarkets. Post-Brexit, some Caribbean exporters still adapting to UK-specific documentation. Smaller island exporters may lack capacity for large UK orders — consolidation may be needed.',
+  },
+  'eu': {
+    name: 'EU Market',
+    flag: '🇪🇺',
+    tagline: 'Parallel market — larger volume, different compliance, French-speaking advantage',
+    color: '#4a90d9',
+    stats: [
+      {rv:'€1.1T', rl:'EU Food Market'},
+      {rv:'27', rl:'Member States'},
+      {rv:'0–12%', rl:'Duty Range (EPA)'},
+      {rv:'High', rl:'Volume Potential'},
+    ],
+    overview: 'The EU is a massive parallel market for African and Caribbean produce — and critically, much of the existing supply chain infrastructure already points toward Europe rather than the UK. Most West African exporters already have EU relationships via France, the Netherlands and Germany. Post-Brexit, UK importers can use this to their advantage — EU-established suppliers are already export-ready, just needing UK compliance layered on top.',
+    tradeContext: 'The EU operates its own Everything But Arms (EBA) and GSP schemes for African produce. Caribbean countries benefit from the EU-CARIFORUM EPA. Rotterdam and Antwerp are the dominant entry ports for African produce into Europe. France dominates West African trade due to historical ties and language. The Netherlands dominates distribution due to Rotterdam port infrastructure.',
+    keyAgreements: ['EU-West Africa Economic Partnership Agreements', 'EU-CARIFORUM EPA (Caribbean)', 'EU Everything But Arms (EBA) for LDCs', 'EU GSP+ for developing countries', 'Post-Brexit: UK and EU rules diverging — check both tariff schedules'],
+    countries: [
+      {flag:'🇳🇱', name:'Netherlands', detail:'Rotterdam is Europe\'s largest port. Dutch importers handle enormous volumes of African produce. Key distribution hub for all of Europe.'},
+      {flag:'🇫🇷', name:'France', detail:'Dominant West African trade partner due to Francophone ties. Paris has large African diaspora. Naturalia and Bio c Bon stock African superfoods.'},
+      {flag:'🇩🇪', name:'Germany', detail:'Large African and Turkish diaspora drives demand. Hamburg and Bremen are key entry ports. Strong organic market for superfoods.'},
+      {flag:'🇪🇸', name:'Spain', detail:'Tiger nuts (chufa) are a traditional Spanish product — horchata market. Strong Caribbean connections via historical ties.'},
+      {flag:'🇮🇹', name:'Italy', detail:'Growing African diaspora community. Milan and Rome have established African food retail. Interest in exotic superfoods growing.'},
+      {flag:'🇧🇪', name:'Belgium', detail:'Antwerp is major African produce entry port. Brussels has large African diaspora — Congolese community particularly significant.'},
+    ],
+    products: ['Fonio','Moringa','Baobab Powder','Hibiscus (Dried)','Tiger Nuts','Shea Butter','Plantain','Cassava Flour','Egusi Seeds','Dried Mango','Soursop','Tamarind'],
+    logistics: 'Rotterdam and Antwerp handle the majority of African produce entering Europe. Regular services from Dakar, Tema, Lagos and Abidjan. Transit times to Rotterdam: 10–18 days from West Africa. Many UK importers use EU consolidation — grouping cargo through Rotterdam then forwarding to UK — though post-Brexit customs adds cost and complexity to this route.',
+    challenges: 'Post-Brexit the UK and EU are separate markets with separate compliance requirements. EU labelling law requires official EU language on packaging — French, German, Spanish etc. Novel Foods authorisation is separate between UK and EU. EUDR (EU Deforestation Regulation) coming into force adds traceability requirements for certain commodities. Exporters serving both markets need two separate compliance pathways.',
+  },
+  'uk': {
+    name: 'UK Market',
+    flag: '🇬🇧',
+    tagline: 'The buyer landscape — channels, demographics and retail dynamics',
+    color: 'var(--blue)',
+    stats: [
+      {rv:'£67B', rl:'Food Retail Market'},
+      {rv:'£916M', rl:'Free-From Market'},
+      {rv:'3.2M', rl:'Afro-Caribbean UK population'},
+      {rv:'6–8%', rl:'Specialty Food Growth'},
+    ],
+    overview: 'The UK is one of the most sophisticated and open food import markets in the world. Post-Brexit import regulations are now settled. The UK market rewards provenance, authenticity and health positioning — all of which African and Caribbean produce delivers. The Afro-Caribbean diaspora is a reliable anchor market; the mainstream health food market is the growth opportunity.',
+    tradeContext: 'HMRC UK Trade Tariff governs all imports. Most African produce enters under DCTS Enhanced Preferences (0% duty). Caribbean produce enters under UK-CARIFORUM EPA. UK food labelling law requires English language, UK importer address, and PPDS compliance. FSA Novel Foods register must be checked for new ingredients.',
+    keyAgreements: ['UK Global Tariff (UKGT) baseline', 'DCTS — Developing Countries Trading Scheme', 'UK-CARIFORUM EPA', 'UK-West Africa trade continuity arrangements'],
+    countries: [
+      {flag:'🏪', name:'Independent Health Retailers', detail:'Planet Organic, As Nature Intended, independents. Fastest to range new products. Good for small importers.'},
+      {flag:'🛒', name:'Major Supermarkets', detail:"Sainsbury's, Tesco, Waitrose, Ocado. High volume but require BRCGS AA, 12+ months history, listing fees."},
+      {flag:'🌍', name:'Afro-Caribbean Grocers', detail:'London (Brixton, Dalston, Peckham), Birmingham (Lozells), Manchester. Core diaspora channel.'},
+      {flag:'📦', name:'D2C & Amazon UK', detail:'Low barrier, high margin. Ideal for first-to-market products. Amazon FBA accelerates reach.'},
+      {flag:'🍽️', name:'Foodservice & Restaurants', detail:'West African cuisine expanding fast in UK restaurants. Consistent volume, lower margin than retail.'},
+      {flag:'💊', name:'Health & Supplement Brands', detail:'Holland & Barrett, online brands. Moringa, baobab, tiger nuts — supplement buyers are active.'},
+    ],
+    products: ['All African produce','All Caribbean produce','Superfoods','Free-From Ingredients','Natural Beauty Ingredients','Food Service Ingredients'],
+    logistics: 'Main UK entry ports: Felixstowe, Tilbury, Southampton. Customs clearance via Customs Declaration Service (CDS). IPAFFS pre-notification required for plant products. Allow £200–£600 for customs clearance agent fees per consignment.',
+    challenges: 'UK relabelling required for most imported goods (EU labels not compliant). BRCGS certification needed for major supermarket listings. Trading Standards enforcement of labelling is active. Novel Foods must be checked on FSA register before importing new ingredients.',
+  },
+};
+
+function openRegion(id) {
+  const r = REGION_DATA[id];
+  if (!r) return;
+  // highlight active tag
+  document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+
+  const overlay = document.getElementById('region-overlay');
+  const content = document.getElementById('region-content');
+
+  content.innerHTML = `
+    <div class="region-modal-header">
+      <div>
+        <div class="region-modal-title">${r.flag} ${r.name}</div>
+        <div class="region-modal-sub">${r.tagline}</div>
+      </div>
+      <button class="region-close" onclick="closeRegion()"><i class="fa-solid fa-xmark"></i> Close</button>
+    </div>
+    <div class="region-stat-row">
+      ${r.stats.map(s=>`<div class="region-stat"><div class="rv" style="color:${r.color};">${s.rv}</div><div class="rl">${s.rl}</div></div>`).join('')}
+    </div>
+    <div class="region-grid">
+      <div class="gap-16">
+        <div class="card">
+          <div class="card-title">📋 Overview</div>
+          <p style="font-size:0.82rem;color:var(--text2);line-height:1.7;">${r.overview}</p>
+        </div>
+        <div class="card">
+          <div class="card-title">🏛️ Trade Context & Agreements</div>
+          <p style="font-size:0.82rem;color:var(--text2);line-height:1.7;margin-bottom:10px;">${r.tradeContext}</p>
+          ${r.keyAgreements.map(a=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:0.78rem;border-bottom:1px solid var(--border);"><i class="fa-solid fa-check" style="color:var(--green);margin-top:2px;flex-shrink:0;"></i><span>${a}</span></div>`).join('')}
+        </div>
+        <div class="card">
+          <div class="card-title">🚢 Logistics Summary</div>
+          <p style="font-size:0.82rem;color:var(--text2);line-height:1.7;">${r.logistics}</p>
+        </div>
+        <div class="card">
+          <div class="card-title">⚠️ Key Challenges</div>
+          <p style="font-size:0.82rem;color:var(--text2);line-height:1.7;">${r.challenges}</p>
+        </div>
+      </div>
+      <div class="gap-16">
+        <div class="card">
+          <div class="card-title">🌐 Key Countries / Channels</div>
+          ${r.countries.map(c=>`<div class="region-country"><div class="region-country-flag">${c.flag}</div><div class="region-country-name">${c.name}</div><div class="region-country-detail">${c.detail}</div></div>`).join('')}
+        </div>
+        <div class="card">
+          <div class="card-title">🌿 Relevant Produce Lines</div>
+          <div style="display:flex;flex-wrap:wrap;margin:-3px;">
+            ${r.products.map(p=>`<span class="region-product-pill" onclick="closeRegion();filterProduceByName('${p.split(' ')[0]}')">${p}</span>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  overlay.classList.add('open');
+}
+
+function closeRegion() {
+  document.getElementById('region-overlay').classList.remove('open');
+  document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+}
+
+renderView('dashboard');
+</script>
+</body>
+</html>
