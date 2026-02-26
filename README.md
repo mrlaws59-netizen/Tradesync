@@ -1,0 +1,2 @@
+# Tradesync
+Trade Intelligence Platform
